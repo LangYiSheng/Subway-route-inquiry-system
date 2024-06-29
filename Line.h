@@ -1,5 +1,6 @@
 //
 // Created by LanCher on 24-6-25.
+// Finish on 24-6-29.
 //
 
 #ifndef LINE_H
@@ -7,31 +8,54 @@
 
 
 #include <vector>
+#include <list>
 #include <string>
 #include <unordered_map>
-
+using namespace std;
+typedef int Length;//站点间距离 这是为了方便修改站点间距离的类型
+typedef list<pair<string,Length>>::iterator StationIt;//站点迭代器
 
 //线路类
 class Line {
     int lineNumber;//线路编号
-    std::vector<std::string> stationNames;//站点名数组
-    std::unordered_map<std::string, int> stationIndexMap;//站点名到索引的映射
-    std::vector<int> lengthToNext;//到下一个站点的距离
-    //站点间距离数组，长度比站点名数组少1，下标i对应站点i和站点i+1之间的距离
-
+    list<pair<string,Length>> stationNames;//站点名数组和到下一个站点的距离
+    unordered_map<string,StationIt> stationIndexMap;//站点名到索引的映射,用于快速查找站点
 public:
-    Line(int number, const std::vector<std::string>& stations,std::vector<int>length);//构造线路，线路编号和站点名数组和站点间距离
-    void addStation(const std::string& station,int pos = -1,int frontLength = 1,int backLength = 1);//添加站点，pos为-1时默认添加到最后，frontLength和backLength分别为新站点到前一个站点和后一个站点的距离
-    void removeStation(const std::string& station,int pos = -1);//删除站点，pos为-1时默认删除最后一个，删除站点后，站点间距离也会被删除，因此要更新站点间距离，使得删除站点后的站点间距离不变
-    void extendLine(const std::vector<std::string>& additionalStations);//延长线路 在线路末尾添加站点，站点间距离为默认值
-    void shortenLine(int start,int length);//缩短线路 从start开始删除length个站点
-    void setLengthToNext(int index,int length);//设置站点间距离,index为站点索引,length为站点间距离
+    Line(int number, const vector<pair<string,Length>>& stations);//构造线路，线路编号和站点名数组和站点间距离
+    bool addStation(const string& station,const string& pos,Length frontLength = 1,Length backLength = 1);//添加站点frontLength和backLength分别为新站点到前一个站点和后一个站点的距离,在找到pos位置插入新站点，最终站点位于pos位置
+    bool addStation_back(const string& station,Length frontLength);//添加站点frontLength为新站点到前一个站点的距离,在最后一个站点后插入新站点
+    bool removeStation(const string& station);//删除站点后，站点间距离也会被删除，因此要更新站点间距离，使得删除站点后的站点间距离不变
+    void extendLine(const vector<pair<string,Length>>& additionalStations,Length frontlength);//延长线路 在线路末尾添加站点，站点间距离为默认值
+    void shortenLine(const string& start,int num);//缩短线路 从start开始删除length个站点
 
-    int getLineNumber() const;//获取线路编号
-    int getStationIndex(const std::string& station) const;//获取站点索引
-    std::string getStationName(int index) const;//获取站点名
-    int getLengthToNext(int index) const;//获取到下一个站点的距离
-    std::vector<std::string> getStations() const;//获取站点名数组
+    //以下代码是用于获取信息的函数，直接写成inline函数
+    int getLineNumber() const {return lineNumber;}//获取线路编号
+    bool hasStation(const string& station) const {return stationIndexMap.find(station) != stationIndexMap.end();}//判断是否有站点
+    StationIt getStationIndex(const string&station) const {
+        return stationIndexMap.at(station);
+    }//获取站点索引
+    static string getStationName(const StationIt index) {return index->first;}//获取站点名
+    static Length getLengthToNext(const StationIt index) {return index->second;}//获取站点间距离
+    static void setLengthToNext(const StationIt index,const Length length) {index->second = length;}//设置站点间距离
+    Length getLengthToNext(const string& station) const {return stationIndexMap.at(station)->second;}
+    //获取到下一个站点的距离
+    StationIt getNextStation(const string& station) const {
+        auto it = stationIndexMap.at(station);
+        return ++it;
+    }//获取该站点的下一个站点的迭代器
+    StationIt getPrevStation(const string& station) const {
+        auto it = stationIndexMap.at(station);
+        return --it;
+    }//获取该站点的上一个站点的迭代器
+    bool isLastStation(const StationIt index) const {return index == --stationNames.end();}//通过迭代器判断是否是最后一个站点
+    bool isFirstStation(const StationIt index) const {return index == stationNames.begin();}//通过迭代器判断是否是第一个站点
+    vector<string> getStations() const {
+        vector<string> stations;
+        for(const auto& station : stationNames) {
+            stations.push_back(station.first);
+        }
+        return stations;
+    }//获取站点名数组
 };
 
 
