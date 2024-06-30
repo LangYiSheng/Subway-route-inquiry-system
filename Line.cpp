@@ -94,25 +94,26 @@ void Line::extendLine(const vector<pair<string, Length>>& additionalStations,Len
     }
 }
 
-void Line::shortenLine(const string& start, int num) {
-    const auto findpos = stationIndexMap.find(start);
+void Line::shortenLine(int num) {
+    for(int i=0;i<num;++i) {
+        stationIndexMap.erase(stationNames.back().first);
+        stationNames.pop_back();
+    }
+    if(!stationNames.empty()) {
+        stationNames.back().second = 0;
+    }
+}
+
+bool Line::changeStationName(const string& string, const std::string& new_station) {
+    const auto findpos = stationIndexMap.find(string);
     if(findpos == stationIndexMap.end()) {
-        return;//没有找到pos位置
+        return false;//没有找到pos位置
     }
     auto it = findpos->second;
-    for(int i=0;i<num;++i) {
-        if(it!=stationNames.begin()) {
-            auto it2 = it;
-            --it2;
-            if(it!=stationNames.end()--)
-                it2->second += it->second;
-            else
-                it2->second = 0;
-        }//将这个节点的backLength加到前一个节点的frontLength上
-        stationNames.erase(it);//删除位于pos位置的站点
-        stationIndexMap.erase(it->first);//删除站点名到索引的映射
-        it = it==stationNames.end() ? stationNames.end() : ++it;//如果删除的是最后一个节点，it不变
-    }
+    it->first = new_station;
+    stationIndexMap.erase(string);
+    stationIndexMap[new_station] = it;
+    return true;
 }
 
 

@@ -45,6 +45,7 @@ bool FileIO::LoadMain(map<int, Line>& lines) {
     if(!file) {
         return false;
     }
+    lines.clear();//清空原有数据
     int size;
     file>>size;
     for(int i=0;i<size;++i) {

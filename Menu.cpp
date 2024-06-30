@@ -5,6 +5,10 @@
 #include "Menu.h"
 
 void Menu::MainMenu() {
+    if(FileIO::LoadMain(lines)) {
+        cout<<"自动读取存档成功"<<endl;
+        system("pause");
+    }
     while(true) {
         system("cls");
         cout<<"欢迎使用上海地铁线路查询系统"<<endl;
@@ -14,7 +18,6 @@ void Menu::MainMenu() {
         cout<<"2.线路编辑-编辑地铁线路的信息"<<endl;
         cout<<"3.路线查询-查询站点间的乘坐线路  "<<endl;
         cout<<"4.保存/读取-保存或读取地铁线路信息"<<endl;
-        /*cout<<"9.程序设置-设置程序的一些参数"<<endl;*/
         cout<<"99.开发者测试菜单"<<endl;
         cout<<"0.退出"<<endl;
         cout<<"请输入您的选择：";
@@ -34,11 +37,6 @@ void Menu::MainMenu() {
             else if(input=="4") {
                 FileMenu();
             }
-            /*else if(input=="9") {
-                /*SettingMenu();#1#
-                cout<<"暂未开放"<<endl;
-                system("pause");
-            }*/
             else if(input=="99") {
                 TestMenu();
             }
@@ -186,17 +184,24 @@ void Menu::AddLine() {
     cout<<"当前位于：主页面->线路编辑菜单->添加线路"<<endl;
     vector<pair<string,Length>> stations;
     int lineNumber=0;
-    cout<<"请输入线路编号：";
+    cout<<"请输入线路编号(输入0取消新增线路)：";
     string input;
     while(cin>>input) {
         try {
             lineNumber = stoi(input);
+            if(lines.find(lineNumber)!=lines.end()) {
+                cout<<"该线路已存在，请重新输入："<<endl;
+                continue;
+            }
             break;
         }
         catch(...) {
             cout<<"输入错误，请重新输入："<<endl;
             continue;
         }
+    }
+    if(lineNumber==0) {
+        return;
     }
     cout<<"是否额外输入站点间距离？(程序默认距离为1)(y/n)";
     string extra;
@@ -345,24 +350,19 @@ void Menu::EditLine() {
                     AddStation(lineNumber);
                 }
                 else if(input2=="2") {
-                    /*RemoveStation(lineNumber);*/
-                    cout<<"暂未开放"<<endl;
+                    RemoveStation(lineNumber);
                 }
                 else if(input2=="3") {
-                    /*EditStation(lineNumber);*/
-                    cout<<"暂未开放"<<endl;
+                    EditStationDistance(lineNumber);
                 }
                 else if(input2=="4") {
-                    /*EditStationName(lineNumber);*/
-                    cout<<"暂未开放"<<endl;
+                    EditStationName(lineNumber);
                 }
                 else if(input2=="5") {
-                    /*ExtendLine(lineNumber);*/
-                    cout<<"暂未开放"<<endl;
+                    ExtendLine(lineNumber);
                 }
                 else if(input2=="6") {
-                    /*ShortenLine(lineNumber);*/
-                    cout<<"暂未开放"<<endl;
+                    ShortenLine(lineNumber);
                 }
                 else if(input2=="7") {
                     /*CloseLine(lineNumber);*/
@@ -462,6 +462,230 @@ void Menu::AddStation(int line_number) {
                 cout<<"添加失败"<<endl;
             }
             else cout<<"添加成功"<<endl;
+        }
+        break;
+    }
+}
+
+void Menu::RemoveStation(int line_number) {
+    cout<<"请输入要删除的站点名称(输入0返回至上一级)：";
+    string station;
+    while(cin>>station) {
+        if(station=="0")
+            break;
+        if(!lines[line_number].hasStation(station)) {
+            cout<<"未找到该站点，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"您将删除"<<station<<"站点的信息"<<endl;
+        cout<<"是否确认删除该站点？(y/n)";
+        string confirm;
+        while(cin>>confirm) {
+            if(confirm=="y") {
+                if(!lines[line_number].removeStation(station)) {
+                    cout<<"删除失败"<<endl;
+                }
+                else cout<<"删除成功"<<endl;
+                break;
+            }
+            if(confirm=="n")
+                break;
+            cout<<"输入错误，请重新输入："<<endl;
+        }
+        break;
+    }
+}
+
+void Menu::EditStationDistance(int line_number) {
+    cout<<"请输入要编辑的站点名称(输入0返回至上一级，编辑的距离为此站点与其后一个站点的距离)：";
+    string station;
+    while(cin>>station) {
+        if(station=="0")
+            break;
+        if(!lines[line_number].hasStation(station)) {
+            cout<<"未找到该站点，请重新输入："<<endl;
+            continue;
+        }
+        if(lines[line_number].isLastStation(lines[line_number].getStationIndex(station))) {
+            cout<<"该站点为最后一个站点，无法编辑距离"<<endl;
+            break;
+        }
+        cout<<"请输入新的站点间距离：";
+        string input;
+        while(cin>>input) {
+            try {
+                Length len = stoi(input);
+                lines[line_number].getStationIndex(station)->second = len;
+                break;
+            }
+            catch(...) {
+                cout<<"输入错误，请重新输入："<<endl;
+                continue;
+            }
+        }
+        cout<<"修改成功"<<endl;
+        break;
+    }
+}
+
+void Menu::EditStationName(int line_number) {
+    cout<<"请输入要编辑的站点名称(输入0返回至上一级)：";
+    string station;
+    while(cin>>station) {
+        if(station=="0")
+            break;
+        if(!lines[line_number].hasStation(station)) {
+            cout<<"未找到该站点，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"请输入新的站点名称：";
+        string newStation;
+        while(cin>>newStation) {
+            if(lines[line_number].hasStation(newStation)) {
+                cout<<"该站点已存在，请重新输入："<<endl;
+                continue;
+            }
+            break;
+        }
+        cout<<"您将把"<<station<<"站点修改为"<<newStation<<"站点"<<endl;
+        cout<<"是否确认修改？(y/n)";
+        string confirm;
+        while(cin>>confirm) {
+            if(confirm=="y") {
+                if(lines[line_number].changeStationName(station,newStation))
+                    cout<<"修改成功"<<endl;
+                else
+                    cout<<"修改失败"<<endl;
+                break;
+            }
+            if(confirm=="n")
+                break;
+            cout<<"输入错误，请重新输入："<<endl;
+        }
+        break;
+    }
+}
+
+void Menu::ExtendLine(int line_number) {
+    vector<pair<string,Length>> stations;
+    Length frontlength = 1;
+    cout<<"请输入延长线路与原线路最后一个站点的距离：";
+    string input;
+    while(cin>>input) {
+        try {
+            frontlength = stoi(input);
+            break;
+        }
+        catch(...) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+    }
+    cout<<"是否输入站点间距离？(程序默认距离为1)(y/n)";
+    string extra;
+    while(cin>>extra) {
+        if(extra=="y") {
+            cout<<"请输入站点间距离，输入格式为：站点名1 距离1 站点名2 距离2 站点名3 距离3 ..."<<endl;
+            cout<<"站点名之间用空格隔开，站点名不能包含空格，距离为正整数"<<endl;
+            cout<<"距离为该站点到下一个站点的距离，最后一个距离输入0即可"<<endl;
+            cout<<"输入0结束输入"<<endl;
+            cout<<"请输入：";
+            string station;
+            while(cin>>station) {
+                if(station=="0") {
+                    break;
+                }
+                if(lines[line_number].hasStation(station)) {
+                    cout<<"此站点已存在"<<endl;
+                    continue;
+                }
+                string length;
+                while(cin>>length) {
+                    if(length=="0") {
+                        stations.emplace_back(station,0);
+                        break;
+                    }
+                    try {
+                        Length len = stoi(length);
+                        stations.emplace_back(station,len);
+                        break;
+                    }
+                    catch(...) {
+                        cout<<"输入错误，请重新输入："<<endl;
+                        continue;
+                    }
+                }
+                if(length == "0")
+                    break;
+            }
+            break;
+        }
+        else if(extra=="n") {
+            cout<<"请输入站点信息，输入格式为：站点名1 站点名2 站点名3 ..."<<endl;
+            cout<<"站点名之间用空格隔开，站点名不能包含空格"<<endl;
+            cout<<"输入0结束输入"<<endl;
+            cout<<"请输入：";
+            string station;
+            while(cin>>station) {
+                if(station=="0") {
+                    if(stations.empty()) {
+                        cout<<"添加失败"<<endl;
+                        cout<<"请至少输入一个站点"<<endl;
+                        system("pause");
+                        return;
+                    }
+                    stations[stations.size()-1].second = 0;
+                    break;
+                }
+                if(lines[line_number].hasStation(station)) {
+                    cout<<"此站点已存在"<<endl;
+                    continue;
+                }
+                stations.emplace_back(station,1);
+            }
+            break;
+        }
+        else {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+    }
+    lines[line_number].extendLine(stations,frontlength);
+    cout<<"延长完成"<<endl;
+}
+
+void Menu::ShortenLine(int line_number) {
+    cout<<"请输入要从尾部缩短的站点数量:";
+    string input;
+    while(cin>>input) {
+        int num;
+        try {
+            num = stoi(input);
+        }
+        catch(...) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+        if(num<=0) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+        if(num>lines[line_number].getStations().size()) {
+            cout<<"您输入的站点超出已有站点个数，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"您将删除"<<num<<"个站点"<<endl;
+        cout<<"是否确认删除？(y/n)";
+        string confirm;
+        while(cin>>confirm) {
+            if(confirm=="y") {
+                lines[line_number].shortenLine(num);
+                cout<<"缩短完成"<<endl;
+                break;
+            }
+            if(confirm=="n")
+                break;
+            cout<<"输入错误，请重新输入："<<endl;
         }
         break;
     }

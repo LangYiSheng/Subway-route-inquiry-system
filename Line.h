@@ -29,7 +29,7 @@ public:
     bool addStation_back(const string& station,Length frontLength);//添加站点frontLength为新站点到前一个站点的距离,在最后一个站点后插入新站点
     bool removeStation(const string& station);//删除站点后，站点间距离也会被删除，因此要更新站点间距离，使得删除站点后的站点间距离不变
     void extendLine(const vector<pair<string,Length>>& additionalStations,Length frontlength);//延长线路 在线路末尾添加站点，站点间距离为默认值
-    void shortenLine(const string& start,int num);//缩短线路 从start开始删除length个站点
+    void shortenLine(int num);//缩短线路 从尾部删除num个站点
 
     //以下代码是用于获取信息的函数，直接写成inline函数
     int getLineNumber() const {return lineNumber;}//获取线路编号
@@ -38,6 +38,8 @@ public:
     StationIt getStationIndex(const string&station) const {
         return stationIndexMap.at(station);
     }//获取站点索引
+    bool changeStationName(const string& string, const std::string& new_station);//修改站点名
+
     static string getStationName(const StationIt index) {return index->first;}//获取站点名
     static Length getLengthToNext(const StationIt index) {return index->second;}//获取站点间距离
     static void setLengthToNext(const StationIt index,const Length length) {index->second = length;}//设置站点间距离
