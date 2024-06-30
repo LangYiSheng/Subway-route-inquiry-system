@@ -57,6 +57,13 @@ public:
         }
         return stations;
     }//获取站点名数组
+    vector<pair<string,Length>> getStationsWithLength() const {
+        vector<pair<string,Length>> stations;
+        for(const auto& station : stationNames) {
+            stations.push_back(station);
+        }
+        return stations;
+    }//获取站点名数组和站点间距离
 };
 
 
