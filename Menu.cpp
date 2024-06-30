@@ -836,6 +836,7 @@ void Menu::BlockStationInterval() {
                         for(auto it = lines[lineNumber].getStationIndex(start);it!=lines[lineNumber].getStationIndex(end);++it) {
                             blockedStations.insert(it->first);
                         }
+                        blockedStations.insert(lines[lineNumber].getStationIndex(end)->first);
                         cout<<"封闭成功"<<endl;
                         break;
                     }
@@ -925,7 +926,8 @@ void Menu::UnblockStationInterval() {
                         for(auto it = lines[lineNumber].getStationIndex(start);it!=lines[lineNumber].getStationIndex(end);++it) {
                             blockedStations.erase(it->first);
                         }
-                        cout<<"封闭成功"<<endl;
+                        blockedStations.erase(lines[lineNumber].getStationIndex(end)->first);
+                        cout<<"恢复成功"<<endl;
                         break;
                     }
                     if(confirm=="n")
