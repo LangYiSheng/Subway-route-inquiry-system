@@ -2,6 +2,7 @@
 using namespace std;
 
 int main(){
-    cout <<"fuck lanchen";
+    Menu MENU;
+    MENU.MainMenu();
     return 0;
 }

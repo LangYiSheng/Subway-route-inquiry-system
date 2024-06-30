@@ -17,10 +17,11 @@ typedef list<pair<string,Length>>::iterator StationIt;//站点迭代器
 
 //线路类
 class Line {
-    int lineNumber;//线路编号
+    int lineNumber{};//线路编号
     list<pair<string,Length>> stationNames;//站点名数组和到下一个站点的距离
     unordered_map<string,StationIt> stationIndexMap;//站点名到索引的映射,用于快速查找站点
 public:
+    Line()=default;
     Line(int number, const vector<pair<string,Length>>& stations);//构造线路，线路编号和站点名数组和站点间距离
     bool addStation(const string& station,const string& pos,Length frontLength = 1,Length backLength = 1);//添加站点frontLength和backLength分别为新站点到前一个站点和后一个站点的距离,在找到pos位置插入新站点，最终站点位于pos位置
     bool addStation_back(const string& station,Length frontLength);//添加站点frontLength为新站点到前一个站点的距离,在最后一个站点后插入新站点
