@@ -11,6 +11,7 @@
 #include <list>
 #include <string>
 #include <unordered_map>
+#include <iterator>
 using namespace std;
 typedef int Length;//站点间距离 这是为了方便修改站点间距离的类型
 typedef list<pair<string,Length>>::iterator StationIt;//站点迭代器
@@ -69,6 +70,18 @@ public:
         }
         return stations;
     }//获取站点名数组和站点间距离
+    int getStationNum() const {return (int)stationNames.size();}//获取站点数量
+    bool isStationEmpty() const {return stationNames.empty();}//判断站点是否为空
+    int getStationIndexNum(const string& station) const {
+        int i= 0;
+        for(const auto & stationName : stationNames) {
+            if(stationName.first == station) {
+                return i;
+            }
+            ++i;
+        }
+        return -1;
+    }//获取站点索引
 };
 
 

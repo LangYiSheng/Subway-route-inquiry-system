@@ -9,12 +9,19 @@
 #include "FileIO.h"
 #include <iostream>
 #include <map>
-
+#include <set>
 
 class Menu {
     map<int,Line> lines;//线路信息,线路号到线路的映射，使用map是为了按序号排序
+    set<string> blockedStations;//禁用站点
+    vector<bool> settings;//设置信息,存有10个bool值用于设置
+    //第一个bool值表示是否在程序启动时自动读取线路信息
+    //第二个bool值表示是否在程序退出时自动保存线路信息
+    //第三个bool值表示是否在显示路线时显示站点间距离
+    //第四个bool值表示是否在显示路线时显示站点是否被禁用
 public:
-    Menu() = default;
+    Menu():settings(SETTING_NUM,true) {}//初始化设置信息;
+
 
 
     void MainMenu();//主菜单
@@ -31,9 +38,16 @@ public:
                 void EditStationName(int line_number);//编辑线路->编辑站点名
                 void ExtendLine(int line_number);//编辑线路->延长线路
                 void ShortenLine(int line_number);//编辑线路->缩短线路
+            void BlockStationMenu();//禁用站点菜单
+                void ShowBlockedStations();//禁用站点菜单->显示禁用站点
+                void BlockStation();//禁用站点菜单->禁用指定站点
+                void BlockStationInterval();//禁用站点菜单->禁用指定站点
+                void UnblockStation();//禁用站点菜单->解禁站点
+                void UnblockStationInterval();//禁用站点菜单->解禁站点
         void FileMenu();//文件操作菜单
             void SaveLines();//保存线路信息
             void ReadLines();//读取线路信息
+        void SettingMenu();//设置菜单
         void TestMenu();//测试菜单
 };
 

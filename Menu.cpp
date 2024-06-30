@@ -5,9 +5,11 @@
 #include "Menu.h"
 
 void Menu::MainMenu() {
-    if(FileIO::LoadMain(lines)) {
-        cout<<"自动读取存档成功"<<endl;
-        system("pause");
+    if(FileIO::GETSET0()) {
+        if(!FileIO::LoadMain(lines,blockedStations,settings)) {
+            cout<<"自动读取存档失败"<<endl;
+            system("pause");
+        }
     }
     while(true) {
         system("cls");
@@ -18,6 +20,7 @@ void Menu::MainMenu() {
         cout<<"2.线路编辑-编辑地铁线路的信息"<<endl;
         cout<<"3.路线查询-查询站点间的乘坐线路  "<<endl;
         cout<<"4.保存/读取-保存或读取地铁线路信息"<<endl;
+        cout<<"5.设置-设置程序的一些参数"<<endl;
         cout<<"99.开发者测试菜单"<<endl;
         cout<<"0.退出"<<endl;
         cout<<"请输入您的选择：";
@@ -37,11 +40,23 @@ void Menu::MainMenu() {
             else if(input=="4") {
                 FileMenu();
             }
+            else if(input=="5") {
+                SettingMenu();
+            }
             else if(input=="99") {
                 TestMenu();
             }
             else if(input=="0") {
                 cout<<"感谢使用"<<endl;
+                if(settings[1]) {
+                    if(!FileIO::SaveMain(lines,blockedStations,settings)) {
+                        cout<<"自动保存存档失败"<<endl;
+                        system("pause");
+                    }
+                    else {
+                        cout<<"已自动保存存档"<<endl;
+                    }
+                }
                 system("pause");
             }
             else {
@@ -96,11 +111,15 @@ void Menu::ShowAllLines() {
     else
         for(const auto & line : lines) {
             cout<<line.first<<"号线"<<": "<<endl;
-            for(const auto & station : line.second.getStations()) {
-                if(station == line.second.getStations().back())
-                    cout<<' '<<station;
-                else
-                    cout<<' '<<station<<' '<<"->";
+            for(const auto & station : line.second.getStationsWithLength()) {
+                cout<<station.first;
+                if(settings[3]&&blockedStations.find(station.first)!=blockedStations.end())
+                    cout<<"(已封闭)";
+                if(station!=line.second.getStationsWithLength().back())
+                    if(settings[2])
+                        cout<<"->"<<station.second<<"->";
+                    else
+                        cout<<"->";
             }
             cout<<endl;
         }
@@ -129,11 +148,15 @@ void Menu::InquiryLine() {
                 continue;
             }
             cout<<lineNumber<<"号线"<<": "<<endl;
-            for(const auto & station : lines[lineNumber].getStations()) {
-                if(station == lines[lineNumber].getStations().back())
-                    cout<<station<<' ';
-                else
-                    cout<<' '<<station<<' '<<"->";
+            for(const auto & station : lines[lineNumber].getStationsWithLength()) {
+                cout<<station.first;
+                if(settings[3]&&blockedStations.find(station.first)!=blockedStations.end())
+                    cout<<"(已封闭)";
+                if(station!=lines[lineNumber].getStationsWithLength().back())
+                    if(settings[2])
+                        cout<<"->"<<station.second<<"->";
+                    else
+                        cout<<"->";
             }
             cout<<endl;
             break;
@@ -151,6 +174,7 @@ void Menu::EditLineMenu() {
         cout<<"1.添加线路"<<endl;
         cout<<"2.删除线路"<<endl;
         cout<<"3.编辑线路"<<endl;
+        cout<<"4.禁用站点"<<endl;
         cout<<"0.返回上一级菜单"<<endl;
         cout<<"请输入您的选择：";
         string input;
@@ -163,6 +187,9 @@ void Menu::EditLineMenu() {
             }
             else if(input=="3") {
                 EditLine();
+            }
+            else if(input=="4") {
+                BlockStationMenu();
             }
             else if(input=="0") {
                 break;
@@ -340,8 +367,6 @@ void Menu::EditLine() {
             cout<<"4.修改站点名称"<<endl;
             cout<<"5.扩充线路长度"<<endl;
             cout<<"6.缩短线路长度"<<endl;
-            cout<<"7.封闭线路区间"<<endl;
-            cout<<"8.恢复线路区间"<<endl;
             cout<<"0.返回上一级菜单"<<endl;
             cout<<"请输入您的选择：";
             string input2;
@@ -363,15 +388,6 @@ void Menu::EditLine() {
                 }
                 else if(input2=="6") {
                     ShortenLine(lineNumber);
-                }
-                else if(input2=="7") {
-                    /*CloseLine(lineNumber);*/
-                    cout<<"暂未开放"<<endl;
-
-                }
-                else if(input2=="8") {
-                    /*OpenLine(lineNumber);*/
-                    cout<<"暂未开放"<<endl;
                 }
                 else if(input2=="0") {
                     break;
@@ -691,6 +707,241 @@ void Menu::ShortenLine(int line_number) {
     }
 }
 
+void Menu::BlockStationMenu() {
+    while(true) {
+        system("cls");
+        cout<<"当前位于：主页面->线路编辑菜单->禁用站点"<<endl;
+        cout<<"请通过输入数字来选择功能："<<endl;
+        cout<<"1.显示目前所有被封闭的站点"<<endl;
+        cout<<"2.禁用指定站点"<<endl;
+        cout<<"3.禁用指定区间的所有站点"<<endl;
+        cout<<"4.解禁站点"<<endl;
+        cout<<"5.解禁区间的所有站点"<<endl;
+        cout<<"0.返回上一级菜单"<<endl;
+        cout<<"请输入您的选择：";
+        string input;
+        while(cin>>input) {
+            if(input=="1") {
+                ShowBlockedStations();
+            }
+            else if(input=="2") {
+                BlockStation();
+            }
+            else if(input=="3") {
+                BlockStationInterval();
+            }
+            else if(input=="4") {
+                UnblockStation();
+            }
+            else if(input=="5") {
+                UnblockStationInterval();
+            }
+            else if(input=="0") {
+                break;
+            }
+            else {
+                cout<<"输入错误，请重新输入："<<endl;
+                continue;
+            }
+            break;
+        }
+        if(input=="0") {
+            break;
+        }
+        system("pause");
+    }
+}
+
+void Menu::ShowBlockedStations() {
+    if(blockedStations.empty()) {
+        cout<<"暂无被封闭的站点"<<endl;
+    }
+    else {
+        cout<<"目前已被封闭的站点有："<<endl;
+        for(const auto & station : blockedStations) {
+            cout<<station<<endl;
+        }
+    };
+}
+
+void Menu::BlockStation() {
+    cout<<"请输入要封闭的站点名称(输入0返回至上一级)：";
+    string station;
+    while(cin>>station) {
+        if(station=="0")
+            break;
+        if(blockedStations.find(station)!=blockedStations.end()) {
+            cout<<"该站点已被封闭，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"您将封闭"<<station<<"站点"<<endl;
+        cout<<"是否确认封闭该站点？(y/n)";
+        string confirm;
+        while(cin>>confirm) {
+            if(confirm=="y") {
+                blockedStations.insert(station);
+                cout<<"封闭成功"<<endl;
+                break;
+            }
+            if(confirm=="n")
+                break;
+            cout<<"输入错误，请重新输入："<<endl;
+        }
+        break;
+    }
+}
+
+void Menu::BlockStationInterval() {
+    cout<<"请输入要封闭的站点区间所在的线路号(输入0返回至上一级)：";
+    string input;
+    while(cin>>input) {
+        int lineNumber;
+        try {
+            lineNumber = stoi(input);
+        }
+        catch(...) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+        if(lineNumber==0)
+            break;
+        if(lines.find(lineNumber)==lines.end()) {
+            cout<<"未找到该线路，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"请输入要封闭的站点区间的起始站点名称：";
+        string start;
+        while(cin>>start) {
+            if(!lines[lineNumber].hasStation(start)) {
+                cout<<"未找到该站点，请重新输入："<<endl;
+                continue;
+            }
+            cout<<"请输入要封闭的站点区间的终点站点名称：";
+            string end;
+            while(cin>>end) {
+                if(!lines[lineNumber].hasStation(end)) {
+                    cout<<"未找到该站点，请重新输入："<<endl;
+                    continue;
+                }
+                if(lines[lineNumber].getStationIndexNum(start)>lines[lineNumber].getStationIndexNum(end)) {
+                    cout<<"输入错误，请重新输入："<<endl;
+                    end = "0";
+                    break;
+                }
+                cout<<"您将封闭"<<lineNumber<<"号线的"<<start<<"站点到"<<end<<"站点的区间"<<endl;
+                cout<<"是否确认封闭该区间？(y/n)";
+                string confirm;
+                while(cin>>confirm) {
+                    if(confirm=="y") {
+                        for(auto it = lines[lineNumber].getStationIndex(start);it!=lines[lineNumber].getStationIndex(end);++it) {
+                            blockedStations.insert(it->first);
+                        }
+                        cout<<"封闭成功"<<endl;
+                        break;
+                    }
+                    if(confirm=="n")
+                        break;
+                    cout<<"输入错误，请重新输入："<<endl;
+                }
+                break;
+            }
+            if(end == "0")
+                continue;
+            break;
+        }
+        break;
+    }
+}
+
+void Menu::UnblockStation() {
+    cout<<"请输入要解封的站点名称(输入0返回至上一级)：";
+    string station;
+    while(cin>>station) {
+        if(station=="0")
+            break;
+        if(blockedStations.find(station)==blockedStations.end()) {
+            cout<<"该站点未被封闭，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"您将解封"<<station<<"站点"<<endl;
+        cout<<"是否确认解封该站点？(y/n)";
+        string confirm;
+        while(cin>>confirm) {
+            if(confirm=="y") {
+                blockedStations.erase(station);
+                cout<<"解封成功"<<endl;
+                break;
+            }
+            if(confirm=="n")
+                break;
+            cout<<"输入错误，请重新输入："<<endl;
+        }
+        break;
+    }
+}
+
+void Menu::UnblockStationInterval() {
+    cout<<"请输入要恢复的站点区间所在的线路号(输入0返回至上一级)：";
+    string input;
+    while(cin>>input) {
+        int lineNumber;
+        try {
+            lineNumber = stoi(input);
+        }
+        catch(...) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+        if(lineNumber==0)
+            break;
+        if(lines.find(lineNumber)==lines.end()) {
+            cout<<"未找到该线路，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"请输入要恢复的站点区间的起始站点名称：";
+        string start;
+        while(cin>>start) {
+            if(!lines[lineNumber].hasStation(start)) {
+                cout<<"未找到该站点，请重新输入："<<endl;
+                continue;
+            }
+            cout<<"请输入要恢复的站点区间的终点站点名称：";
+            string end;
+            while(cin>>end) {
+                if(!lines[lineNumber].hasStation(end)) {
+                    cout<<"未找到该站点，请重新输入："<<endl;
+                    continue;
+                }
+                if(lines[lineNumber].getStationIndexNum(start)>lines[lineNumber].getStationIndexNum(end)) {
+                    cout<<"输入错误，请重新输入："<<endl;
+                    end = "0";
+                    break;
+                }
+                cout<<"您将恢复"<<lineNumber<<"号线的"<<start<<"站点到"<<end<<"站点的区间"<<endl;
+                cout<<"是否确认恢复该区间？(y/n)";
+                string confirm;
+                while(cin>>confirm) {
+                    if(confirm=="y") {
+                        for(auto it = lines[lineNumber].getStationIndex(start);it!=lines[lineNumber].getStationIndex(end);++it) {
+                            blockedStations.erase(it->first);
+                        }
+                        cout<<"封闭成功"<<endl;
+                        break;
+                    }
+                    if(confirm=="n")
+                        break;
+                    cout<<"输入错误，请重新输入："<<endl;
+                }
+                break;
+            }
+            if(end == "0")
+                continue;
+            break;
+        }
+        break;
+    }
+}
+
 void Menu::FileMenu() {
     while(true) {
         system("cls");
@@ -725,7 +976,7 @@ void Menu::FileMenu() {
 }
 
 void Menu::SaveLines() {
-    if(!FileIO::SaveMain(lines)) {
+    if(!FileIO::SaveMain(lines,blockedStations,settings)) {
         cout<<"保存失败"<<endl;
         cout<<"可能原因：创建/打开文件失败"<<endl;
     }
@@ -734,12 +985,57 @@ void Menu::SaveLines() {
 }
 
 void Menu::ReadLines() {
-    if(!FileIO::LoadMain(lines)) {
+    if(!FileIO::LoadMain(lines,blockedStations,settings)) {
         cout<<"读取失败"<<endl;
         cout<<"可能原因：文件不存在或文件格式错误"<<endl;
     }
     else cout<<"已完成读取"<<endl;
     system("pause");
+}
+
+
+void Menu::SettingMenu() {
+    //第一个bool值表示是否在程序启动时自动读取线路信息
+    //第二个bool值表示是否在程序退出时自动保存线路信息
+    //第三个bool值表示是否在显示路线时显示站点间距离
+    //第四个bool值表示是否在显示路线时显示站点是否被禁用
+    while(true) {
+        system("cls");
+        cout<<"当前位于：主页面->设置菜单"<<endl;
+        cout<<"请通过输入数字来改变功能的是否启用："<<endl;
+        cout<<"1.程序启动时自动读取线路信息\t\t"<<(settings[0]?"(√)":"(×)")<<endl;
+        cout<<"2.程序退出时自动保存线路信息\t\t"<<(settings[1]?"(√)":"(×)")<<endl;
+        cout<<"3.在显示路线时显示站点间距离\t\t"<<(settings[2]?"(√)":"(×)")<<endl;
+        cout<<"4.在显示路线时显示站点是否被禁用\t"<<(settings[3]?"(√)":"(×)")<<endl;
+        cout<<"0.返回上一级菜单"<<endl;
+        cout<<"请输入您的选择：";
+        string input;
+        while(cin>>input) {
+            if(input=="1") {
+                settings[0] = !settings[0];
+            }
+            else if(input=="2") {
+                settings[1] = !settings[1];
+            }
+            else if(input=="3") {
+                settings[2] = !settings[2];
+            }
+            else if(input=="4") {
+                settings[3] = !settings[3];
+            }
+            else if(input=="0") {
+                break;
+            }
+            else {
+                cout<<"输入错误，请重新输入："<<endl;
+                continue;
+            }
+            break;
+        }
+        if(input=="0") {
+            break;
+        }
+    }
 }
 
 void Menu::TestMenu() {
