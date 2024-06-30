@@ -19,11 +19,18 @@ public:
 
     void MainMenu();//主菜单
 
+
     void InquiryLineMenu();//线路查询菜单
-    void ShowAllLines();//显示所有线路
+        void ShowAllLines();//显示所有线路
+        void InquiryLine();//显示某条线路
+
 
     void EditLineMenu();//线路数据编辑菜单
-    void AddLine();//添加线路
+        void AddLine();//添加线路
+        void RemoveLine();//删除线路
+        void EditLine();//编辑线路
+            void AddStation(int line_number);//编辑线路->添加站点
+
 
     void FileMenu();//文件操作菜单
     void SaveLines();//保存线路信息

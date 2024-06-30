@@ -73,9 +73,7 @@ void Menu::InquiryLineMenu() {
                 ShowAllLines();
             }
             else if(input=="2") {
-                /*InquiryLine();*/
-                cout<<"暂未开放"<<endl;
-                system("pause");
+                InquiryLine();
             }
             else if(input=="0") {
                 break;
@@ -102,13 +100,49 @@ void Menu::ShowAllLines() {
             cout<<line.first<<"号线"<<": "<<endl;
             for(const auto & station : line.second.getStations()) {
                 if(station == line.second.getStations().back())
-                    cout<<station<<' ';
+                    cout<<' '<<station;
                 else
                     cout<<' '<<station<<' '<<"->";
             }
             cout<<endl;
         }
     system("pause");
+}
+
+void Menu::InquiryLine() {
+    system("cls");
+    cout<<"当前位于：主页面->线路查询菜单->查询某条线路"<<endl;
+    while(true) {
+        cout<<"请输入要查询的线路编号(输入0返回至上一级)：";
+        string input;
+        while(cin>>input) {
+            int lineNumber;
+            try {
+                lineNumber = stoi(input);
+            }
+            catch(...) {
+                cout<<"输入错误，请重新输入："<<endl;
+                continue;
+            }
+            if(lineNumber==0)
+                break;
+            if(lines.find(lineNumber) == lines.end()) {
+                cout<<"未找到该线路，请重新输入："<<endl;
+                continue;
+            }
+            cout<<lineNumber<<"号线"<<": "<<endl;
+            for(const auto & station : lines[lineNumber].getStations()) {
+                if(station == lines[lineNumber].getStations().back())
+                    cout<<station<<' ';
+                else
+                    cout<<' '<<station<<' '<<"->";
+            }
+            cout<<endl;
+            break;
+        }
+        if(input=="0")
+            break;
+    }
 }
 
 void Menu::EditLineMenu() {
@@ -127,14 +161,10 @@ void Menu::EditLineMenu() {
                 AddLine();
             }
             else if(input=="2") {
-                /*RemoveLine();*/
-                cout<<"暂未开放"<<endl;
-                system("pause");
+                RemoveLine();
             }
             else if(input=="3") {
-                /*EditLine();*/
-                cout<<"暂未开放"<<endl;
-                system("pause");
+                EditLine();
             }
             else if(input=="0") {
                 break;
@@ -211,6 +241,12 @@ void Menu::AddLine() {
             string station;
             while(cin>>station) {
                 if(station=="0") {
+                    if(stations.empty()) {
+                        cout<<"添加失败"<<endl;
+                        cout<<"请至少输入一个站点"<<endl;
+                        system("pause");
+                        return;
+                    }
                     stations[stations.size()-1].second = 0;
                     break;
                 }
@@ -227,6 +263,208 @@ void Menu::AddLine() {
     lines[lineNumber] = line;
     cout<<"添加成功"<<endl;
     system("pause");
+}
+
+void Menu::RemoveLine() {
+    system("cls");
+    cout<<"当前位于：主页面->线路编辑菜单->删除线路"<<endl;
+    while(true) {
+        cout<<"请输入要删除的线路编号(输入0返回至上一级)：";
+        string input;
+        while(cin>>input) {
+            int lineNumber;
+            try {
+                lineNumber = stoi(input);
+            }
+            catch(...) {
+                cout<<"输入错误，请重新输入："<<endl;
+                continue;
+            }
+            if(lineNumber==0)
+                break;
+            if(lines.find(lineNumber) == lines.end()) {
+                cout<<"未找到该线路，请重新输入："<<endl;
+                continue;
+            }
+            cout<<"您将删除"<<lineNumber<<"号线的信息"<<endl;
+            cout<<"是否确认删除该线路？(y/n)";
+            string confirm;
+            while(cin>>confirm) {
+                if(confirm=="y") {
+                    lines.erase(lineNumber);
+                    cout<<"删除成功"<<endl;
+                    break;
+                }
+                if(confirm=="n")
+                    break;
+                cout<<"输入错误，请重新输入："<<endl;
+            }
+            break;
+        }
+        if(input=="0")
+            break;
+    }
+}
+
+void Menu::EditLine() {
+    while(true) {
+        system("cls");
+        cout<<"当前位于：主页面->线路编辑菜单->编辑线路"<<endl;
+        cout<<"请输入要编辑的线路编号(输入0返回至上一级)：";
+        string input;
+        while(cin>>input) {
+            int lineNumber;
+            try {
+                lineNumber = stoi(input);
+            }
+            catch(...) {
+                cout<<"输入错误，请重新输入："<<endl;
+                continue;
+            }
+            if(lineNumber==0)
+                break;
+            if(lines.find(lineNumber) == lines.end()) {
+                cout<<"未找到该线路，请重新输入："<<endl;
+                continue;
+            }
+            cout<<"您将编辑"<<lineNumber<<"号线的信息"<<endl;
+            cout<<"请通过输入数字来选择功能："<<endl;
+            cout<<"1.添加站点"<<endl;
+            cout<<"2.删除站点"<<endl;
+            cout<<"3.修改站点距离"<<endl;
+            cout<<"4.修改站点名称"<<endl;
+            cout<<"5.扩充线路长度"<<endl;
+            cout<<"6.缩短线路长度"<<endl;
+            cout<<"7.封闭线路区间"<<endl;
+            cout<<"8.恢复线路区间"<<endl;
+            cout<<"0.返回上一级菜单"<<endl;
+            cout<<"请输入您的选择：";
+            string input2;
+            while(cin>>input2) {
+                if(input2=="1") {
+                    AddStation(lineNumber);
+                }
+                else if(input2=="2") {
+                    /*RemoveStation(lineNumber);*/
+                    cout<<"暂未开放"<<endl;
+                }
+                else if(input2=="3") {
+                    /*EditStation(lineNumber);*/
+                    cout<<"暂未开放"<<endl;
+                }
+                else if(input2=="4") {
+                    /*EditStationName(lineNumber);*/
+                    cout<<"暂未开放"<<endl;
+                }
+                else if(input2=="5") {
+                    /*ExtendLine(lineNumber);*/
+                    cout<<"暂未开放"<<endl;
+                }
+                else if(input2=="6") {
+                    /*ShortenLine(lineNumber);*/
+                    cout<<"暂未开放"<<endl;
+                }
+                else if(input2=="7") {
+                    /*CloseLine(lineNumber);*/
+                    cout<<"暂未开放"<<endl;
+
+                }
+                else if(input2=="8") {
+                    /*OpenLine(lineNumber);*/
+                    cout<<"暂未开放"<<endl;
+                }
+                else if(input2=="0") {
+                    break;
+                }
+                else {
+                    cout<<"输入错误，请重新输入："<<endl;
+                    continue;
+                }
+                break;
+            }
+            system("pause");
+            break;
+        }
+        if(input=="0")
+            break;
+    }
+}
+
+void Menu::AddStation(int line_number) {
+    cout<<"请输入要添加的站点所在原站点的名称(输入0返回至上一级，输入-1添加到结尾)"<<endl;
+    cout<<"例如：在A站和B站之间添加C站，输入B"<<endl;
+    string pos;
+    while(cin>>pos) {
+        if(pos=="0")
+            break;
+        if(pos!="-1"&&!lines[line_number].hasStation(pos)) {
+            cout<<"未找到该站点，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"请输入要添加的站点名称：";
+        string station;
+        while(cin>>station) {
+            if(lines[line_number].hasStation(station)) {
+                cout<<"该站点已存在，请重新输入："<<endl;
+                continue;
+            }
+            break;
+        }
+        if(pos=="-1") {
+            Length frontLength = 1;
+            cout<<"请输入新站点与前一个站点的距离：";
+            string input;
+            while(cin>>input) {
+                try {
+                    frontLength = stoi(input);
+                    break;
+                }
+                catch(...) {
+                    cout<<"输入错误，请重新输入："<<endl;
+                    continue;
+                }
+            }
+            if(!lines[line_number].addStation_back(station,frontLength)) {
+                cout<<"添加失败"<<endl;
+            }
+            else cout<<"添加成功"<<endl;
+        }
+        else {
+            Length frontLength = 1;
+            Length backLength = 1;
+            if(pos!=lines[line_number].getFirstStation()->first) {
+                cout<<"请输入新站点与前一个站点的距离：";
+                string input;
+                while(cin>>input) {
+                    try {
+                        frontLength = stoi(input);
+                        break;
+                    }
+                    catch(...) {
+                        cout<<"输入错误，请重新输入："<<endl;
+                        continue;
+                    }
+                }
+            }
+            cout<<"请输入新站点与后一个站点的距离：";
+            string input;
+            while(cin>>input) {
+                try {
+                    backLength = stoi(input);
+                    break;
+                }
+                catch(...) {
+                    cout<<"输入错误，请重新输入："<<endl;
+                    continue;
+                }
+            }
+            if(!lines[line_number].addStation(station,pos,frontLength,backLength)) {
+                cout<<"添加失败"<<endl;
+            }
+            else cout<<"添加成功"<<endl;
+        }
+        break;
+    }
 }
 
 void Menu::FileMenu() {

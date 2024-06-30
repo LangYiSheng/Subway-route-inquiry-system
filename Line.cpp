@@ -16,17 +16,35 @@ Line::Line(int number, const vector<pair<string,Length>>& stations) {
     }
 }
 
+Line::Line(const Line& line):lineNumber(line.lineNumber),stationNames(line.stationNames) {
+    //拷贝构造函数中需要重新构造stationIndexMap
+    for(auto it = stationNames.begin();it!=stationNames.end();++it) {
+        stationIndexMap[it->first] = it;
+    }
+}
+
+Line& Line::operator=(const Line& line) {
+    lineNumber = line.lineNumber;
+    stationNames = line.stationNames;
+    //赋值运算符中需要重新构造stationIndexMap
+    stationIndexMap.clear();
+    for(auto it = stationNames.begin();it!=stationNames.end();++it) {
+        stationIndexMap[it->first] = it;
+    }
+    return *this;
+}
+
 bool Line::addStation(const string& station, const string& pos, Length frontLength, Length backLength) {
     const auto findpos = stationIndexMap.find(pos);
     if(findpos == stationIndexMap.end()) {
         return false;//没有找到pos位置
     }
     auto it = findpos->second;
-    if(it==stationNames.end()--)
+    if(it==--stationNames.end())
         backLength = 0;//如果插入到最后一个站点后面，后一个站点的距离为0
 
     if(it==stationNames.begin()) {
-        stationNames.emplace_front(station,frontLength);
+        stationNames.emplace_front(station,backLength);
         stationIndexMap[station] = stationNames.begin();
     }
     else {

@@ -23,6 +23,8 @@ class Line {
 public:
     Line()=default;
     Line(int number, const vector<pair<string,Length>>& stations);//构造线路，线路编号和站点名数组和站点间距离
+    Line(const Line& line);//拷贝构造函数
+    Line& operator=(const Line& line);//赋值运算符
     bool addStation(const string& station,const string& pos,Length frontLength = 1,Length backLength = 1);//添加站点frontLength和backLength分别为新站点到前一个站点和后一个站点的距离,在找到pos位置插入新站点，最终站点位于pos位置
     bool addStation_back(const string& station,Length frontLength);//添加站点frontLength为新站点到前一个站点的距离,在最后一个站点后插入新站点
     bool removeStation(const string& station);//删除站点后，站点间距离也会被删除，因此要更新站点间距离，使得删除站点后的站点间距离不变
@@ -32,6 +34,7 @@ public:
     //以下代码是用于获取信息的函数，直接写成inline函数
     int getLineNumber() const {return lineNumber;}//获取线路编号
     bool hasStation(const string& station) const {return stationIndexMap.find(station) != stationIndexMap.end();}//判断是否有站点
+    StationIt getFirstStation() {return stationNames.begin();}//获取第一个站点的迭代器
     StationIt getStationIndex(const string&station) const {
         return stationIndexMap.at(station);
     }//获取站点索引
