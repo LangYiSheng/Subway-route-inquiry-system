@@ -27,7 +27,7 @@ class FileIO {
 public:
     static bool GETSET0() ;//获取是否在程序启动时自动读取线路信息
     static bool SaveMain(const map<int, Line>& lines,const set<string>& blocked_stations,const vector<bool>& settings,const Transfer&TS) ;//保存线路和换乘信息
-    static bool LoadMain(map<int, Line>& lines,set<string>& blocked_stations,vector<bool>& settings,Transfer&TS) ;//读取线路和换乘信息
+    static bool LoadMain(const string& pos,map<int, Line>& lines,set<string>& blocked_stations,vector<bool>& settings,Transfer&TS) ;//读取线路和换乘信息
 
     /*void saveTransfer(const std::string& filename, const Transfer& transfer) const;//保存换乘信息*/
     /*Transfer loadTransfer(const std::string& filename) const;//读取换乘信息*/

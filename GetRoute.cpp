@@ -36,8 +36,17 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
             }
             route.back().second.first = start.second;
             reverse(route.begin(),route.end());
-            result.emplace_back(distance[end],route);
-            //找到一条路径
+            //检查是否存在重复路径
+            bool flag = false;
+            for(const auto& r : result) {
+                if(r.second==route) {
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag) {
+                result.emplace_back(distance[end],route);
+            }
             continue;
         }
         if(distance[top.second]<top.first) {
@@ -114,8 +123,17 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
             }
             route.back().second.first = start.second;
             reverse(route.begin(),route.end());
-            result.emplace_back(NumberOfTransfers[end],route);
-            //找到一条路径
+            //检查是否存在重复路径
+            bool flag = false;
+            for(const auto& r : result) {
+                if(r.second==route) {
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag) {
+                result.emplace_back(NumberOfTransfers[end],route);
+            }
             continue;
         }
         if(NumberOfTransfers[top.second]<top.first) {

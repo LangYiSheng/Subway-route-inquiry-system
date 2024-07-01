@@ -121,8 +121,8 @@ bool FileIO::SaveMain(const map<int, Line>& lines,const set<string>& blocked_sta
     return true;
 }
 
-bool FileIO::LoadMain(map<int, Line>& lines,set<string>& blocked_stations,vector<bool>& settings,Transfer& TS) {
-    ifstream file(R"(lines.txt)");
+bool FileIO::LoadMain(const string& pos,map<int, Line>& lines,set<string>& blocked_stations,vector<bool>& settings,Transfer& TS) {
+    ifstream file(pos);
     if(!file) {
         return false;
     }

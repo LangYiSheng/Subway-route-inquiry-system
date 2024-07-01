@@ -22,7 +22,7 @@ void Menu::PrintTextWithColor(const string& text, int color,bool if_endl = true)
 
 void Menu::MainMenu() {
     if(FileIO::GETSET0()) {
-        if(!FileIO::LoadMain(lines,blockedStations,settings,TS)) {
+        if(!FileIO::LoadMain("lines.txt",lines,blockedStations,settings,TS)) {
             PrintTextWithColor("自动读取存档失败",4);
             system("pause");
         }
@@ -64,17 +64,30 @@ void Menu::MainMenu() {
                 TestMenu();
             }
             else if(input=="0") {
-                cout<<"感谢使用"<<endl;
-                if(settings[1]) {
-                    if(!FileIO::SaveMain(lines,blockedStations,settings,TS)) {
-                        PrintTextWithColor("自动保存存档失败",4);
-                        system("pause");
+                PrintTextWithColor("确定要退出吗？(y/n)",4);
+                string confirm;
+                while(cin>>confirm) {
+                    if(confirm=="y") {
+                        cout<<"感谢使用"<<endl;
+                        if(settings[1]) {
+                            if(!FileIO::SaveMain(lines,blockedStations,settings,TS)) {
+                                PrintTextWithColor("自动保存存档失败！",4);
+                                PrintTextWithColor("正在返回主菜单",4);
+                                system("pause");
+                                input="1";//重新进入主菜单
+                                break;
+                            }
+                            cout<<"已自动保存存档"<<endl;
+                        }
+                        Sleep(2000);
+                        return;
                     }
-                    else {
-                        cout<<"已自动保存存档"<<endl;
+                    if(confirm=="n") {
+                        input = "1";
+                        break;
                     }
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                 }
-                system("pause");
             }
             else {
                 PrintTextWithColor("输入错误，请重新输入：",4);
@@ -1317,6 +1330,8 @@ void Menu::InquiryShortestRoute() {
                             for(const auto & route : result) {
                                 PrintTextWithColor("路线"+to_string(i),9,false);cout<<": 总时间为";PrintTextWithColor(to_string(route.first),6,false);cout<<"分钟"<<endl;
                                 for(const auto & line : route.second) {
+                                    if(line.second.first==line.second.second)
+                                        continue;
                                     cout<<"乘坐";PrintTextWithColor(to_string(line.first)+"号线",3,false);
                                     cout<<"从 "<<line.second.first<<" 站上车 -> "<<line.second.second<<" 站下车"<<endl;
                                 }
@@ -1434,9 +1449,10 @@ void Menu::FileMenu() {
         system("cls");
         PrintTextWithColor("当前位于：主页面->文件操作菜单",2);
         cout<<"请通过输入数字来选择功能："<<endl;
-        cout<<"数据位于程序目录下的data文件夹中"<<endl;
+        cout<<"数据位于程序目录下的line.txt中"<<endl;
         cout<<"1.保存当前数据"<<endl;
         cout<<"2.读取存档数据"<<endl;
+        cout<<"3.从指定文件读取数据"<<endl;
         cout<<"0.返回上一级菜单"<<endl;
         cout<<"请输入您的选择：";
         string input;
@@ -1446,6 +1462,19 @@ void Menu::FileMenu() {
             }
             else if(input=="2") {
                 ReadLines();
+            }
+            else if(input=="3") {
+                cout<<"请输入文件名：";
+                string filename;
+                while(cin>>filename) {
+                    if(!FileIO::LoadMain(filename,lines,blockedStations,settings,TS)) {
+                        PrintTextWithColor("读取失败",4);
+                        cout<<"可能原因：文件不存在或文件格式错误"<<endl;
+                    }
+                    else cout<<"已完成读取"<<endl;
+                    system("pause");
+                    break;
+                }
             }
             else if(input=="0") {
                 break;
@@ -1472,7 +1501,7 @@ void Menu::SaveLines() {
 }
 
 void Menu::ReadLines() {
-    if(!FileIO::LoadMain(lines,blockedStations,settings,TS)) {
+    if(!FileIO::LoadMain("lines.txt",lines,blockedStations,settings,TS)) {
         PrintTextWithColor("读取失败",4);
         cout<<"可能原因：文件不存在或文件格式错误"<<endl;
     }
