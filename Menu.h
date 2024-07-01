@@ -17,12 +17,16 @@ class Menu {
     set<string> blockedStations;//禁用站点
     Transfer TS;//换乘信息
     vector<bool> settings;//设置信息,存有10个bool值用于设置
-    //第一个bool值表示是否在程序启动时自动读取线路信息
-    //第二个bool值表示是否在程序退出时自动保存线路信息
-    //第三个bool值表示是否在显示路线时显示站点间距离
-    //第四个bool值表示是否在显示路线时显示站点是否被禁用
+    //settings[0]表示是否在程序启动时自动读取线路信息
+    //settings[1]表示是否在程序退出时自动保存线路信息
+    //settings[2]值表示是否在显示路线时显示站点间距离
+    //settings[3]值表示是否在显示路线时显示站点是否被禁用
+    //settings[4]值表示是否在显示路线时显示换乘信息
 public:
-    Menu():settings(SETTING_NUM,true) {}//初始化设置信息;
+    Menu():settings(SETTING_NUM,true) {
+        settings[0]=false;//默认不自动读取线路信息
+        settings[1]=false;//默认不自动保存线路信息
+    }//初始化设置信息;
 
 
 

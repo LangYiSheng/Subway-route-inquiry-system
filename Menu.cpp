@@ -115,6 +115,13 @@ void Menu::ShowAllLines() {
                 cout<<station.first;
                 if(settings[3]&&blockedStations.find(station.first)!=blockedStations.end())
                     cout<<"(已封闭)";
+                if(settings[4]&&TS.hasTransfer({line.first,station.first})) {
+                    cout<<"( 可换乘至：";
+                    for(const auto & transfer : TS.getTransfers({line.first,station.first})) {
+                        cout<<transfer.first.first<<"号线"<<transfer.first.second<<" ";
+                    }
+                    cout<<")";
+                }
                 if(station!=line.second.getStationsWithLength().back())
                     if(settings[2])
                         cout<<"->"<<station.second<<"->";
@@ -152,6 +159,13 @@ void Menu::InquiryLine() {
                 cout<<station.first;
                 if(settings[3]&&blockedStations.find(station.first)!=blockedStations.end())
                     cout<<"(已封闭)";
+                if(settings[4]&&TS.hasTransfer({lineNumber,station.first})) {
+                    cout<<"( 可换乘至：";
+                    for(const auto & transfer : TS.getTransfers({lineNumber,station.first})) {
+                        cout<<transfer.first.first<<"号线"<<transfer.first.second<<" ";
+                    }
+                    cout<<")";
+                }
                 if(station!=lines[lineNumber].getStationsWithLength().back())
                     if(settings[2])
                         cout<<"->"<<station.second<<"->";
@@ -1255,6 +1269,7 @@ void Menu::SettingMenu() {
         cout<<"2.程序退出时自动保存线路信息\t\t"<<(settings[1]?"(√)":"(×)")<<endl;
         cout<<"3.在显示路线时显示站点间距离\t\t"<<(settings[2]?"(√)":"(×)")<<endl;
         cout<<"4.在显示路线时显示站点是否被禁用\t"<<(settings[3]?"(√)":"(×)")<<endl;
+        cout<<"5.在显示路线时显示站点换乘信息\t\t"<<(settings[4]?"(√)":"(×)")<<endl;
         cout<<"0.返回上一级菜单"<<endl;
         cout<<"请输入您的选择：";
         string input;
@@ -1270,6 +1285,9 @@ void Menu::SettingMenu() {
             }
             else if(input=="4") {
                 settings[3] = !settings[3];
+            }
+            else if(input=="5") {
+                settings[4] = !settings[4];
             }
             else if(input=="0") {
                 break;
