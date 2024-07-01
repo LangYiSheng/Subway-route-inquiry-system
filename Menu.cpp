@@ -4,6 +4,16 @@
 
 #include "Menu.h"
 
+
+void Menu::PrintTextWithColor(const string& text, int color,bool if_endl = true) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);//设置颜色
+    cout<<text;
+    SetConsoleTextAttribute(hConsole, 7);//恢复默认颜色
+    if(if_endl)
+        cout<<endl;
+}
+
 void Menu::MainMenu() {
     if(FileIO::GETSET0()) {
         if(!FileIO::LoadMain(lines,blockedStations,settings,TS)) {
@@ -11,9 +21,11 @@ void Menu::MainMenu() {
             system("pause");
         }
     }
+    //更改窗口标题为
+    SetConsoleTitle("上海地铁线路查询系统");
     while(true) {
         system("cls");
-        cout<<"欢迎使用上海地铁线路查询系统"<<endl;
+        PrintTextWithColor("欢迎使用上海地铁线路查询系统",2);
         cout<<"程序内存储线路数量为："<<lines.size()<<endl;
         cout<<"请通过输入数字来选择功能："<<endl;
         cout<<"1.线路查询-获取地铁线路的信息"<<endl;
@@ -22,7 +34,7 @@ void Menu::MainMenu() {
         cout<<"4.保存/读取-保存或读取地铁线路信息"<<endl;
         cout<<"5.设置-设置程序的一些参数"<<endl;
         cout<<"99.开发者测试菜单"<<endl;
-        cout<<"0.退出"<<endl;
+        PrintTextWithColor("0.退出",4);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
@@ -50,7 +62,7 @@ void Menu::MainMenu() {
                 cout<<"感谢使用"<<endl;
                 if(settings[1]) {
                     if(!FileIO::SaveMain(lines,blockedStations,settings,TS)) {
-                        cout<<"自动保存存档失败"<<endl;
+                        PrintTextWithColor("自动保存存档失败",4);
                         system("pause");
                     }
                     else {
@@ -60,7 +72,7 @@ void Menu::MainMenu() {
                 system("pause");
             }
             else {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             break;
@@ -92,7 +104,7 @@ void Menu::InquiryLineMenu() {
                 break;
             }
             else {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             break;
@@ -145,7 +157,7 @@ void Menu::InquiryLine() {
                 lineNumber = stoi(input);
             }
             catch(...) {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             if(lineNumber==0)
@@ -213,7 +225,7 @@ void Menu::EditLineMenu() {
                 break;
             }
             else {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             break;
@@ -241,7 +253,7 @@ void Menu::AddLine() {
             break;
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
     }
@@ -274,7 +286,7 @@ void Menu::AddLine() {
                         break;
                     }
                     catch(...) {
-                        cout<<"输入错误，请重新输入："<<endl;
+                        PrintTextWithColor("输入错误，请重新输入：",4);
                         continue;
                     }
                 }
@@ -305,7 +317,7 @@ void Menu::AddLine() {
             break;
         }
         else {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
     }
@@ -327,7 +339,7 @@ void Menu::RemoveLine() {
                 lineNumber = stoi(input);
             }
             catch(...) {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             if(lineNumber==0)
@@ -347,7 +359,7 @@ void Menu::RemoveLine() {
                 }
                 if(confirm=="n")
                     break;
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
             }
             break;
         }
@@ -368,7 +380,7 @@ void Menu::EditLine() {
                 lineNumber = stoi(input);
             }
             catch(...) {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             if(lineNumber==0)
@@ -411,7 +423,7 @@ void Menu::EditLine() {
                     break;
                 }
                 else {
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                     continue;
                 }
                 break;
@@ -454,7 +466,7 @@ void Menu::AddStation(int line_number) {
                     break;
                 }
                 catch(...) {
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                     continue;
                 }
             }
@@ -475,7 +487,7 @@ void Menu::AddStation(int line_number) {
                         break;
                     }
                     catch(...) {
-                        cout<<"输入错误，请重新输入："<<endl;
+                        PrintTextWithColor("输入错误，请重新输入：",4);
                         continue;
                     }
                 }
@@ -488,7 +500,7 @@ void Menu::AddStation(int line_number) {
                     break;
                 }
                 catch(...) {
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                     continue;
                 }
             }
@@ -524,7 +536,7 @@ void Menu::RemoveStation(int line_number) {
             }
             if(confirm=="n")
                 break;
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
         }
         break;
     }
@@ -553,7 +565,7 @@ void Menu::EditStationDistance(int line_number) {
                 break;
             }
             catch(...) {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
         }
@@ -594,7 +606,7 @@ void Menu::EditStationName(int line_number) {
             }
             if(confirm=="n")
                 break;
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
         }
         break;
     }
@@ -611,7 +623,7 @@ void Menu::ExtendLine(int line_number) {
             break;
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
     }
@@ -645,7 +657,7 @@ void Menu::ExtendLine(int line_number) {
                         break;
                     }
                     catch(...) {
-                        cout<<"输入错误，请重新输入："<<endl;
+                        PrintTextWithColor("输入错误，请重新输入：",4);
                         continue;
                     }
                 }
@@ -680,7 +692,7 @@ void Menu::ExtendLine(int line_number) {
             break;
         }
         else {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
     }
@@ -697,11 +709,11 @@ void Menu::ShortenLine(int line_number) {
             num = stoi(input);
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
         if(num<=0) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
         if(num>lines[line_number].getStations().size()) {
@@ -719,7 +731,7 @@ void Menu::ShortenLine(int line_number) {
             }
             if(confirm=="n")
                 break;
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
         }
         break;
     }
@@ -758,7 +770,7 @@ void Menu::BlockStationMenu() {
                 break;
             }
             else {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             break;
@@ -803,7 +815,7 @@ void Menu::BlockStation() {
             }
             if(confirm=="n")
                 break;
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
         }
         break;
     }
@@ -818,7 +830,7 @@ void Menu::BlockStationInterval() {
             lineNumber = stoi(input);
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
         if(lineNumber==0)
@@ -842,7 +854,7 @@ void Menu::BlockStationInterval() {
                     continue;
                 }
                 if(lines[lineNumber].getStationIndexNum(start)>lines[lineNumber].getStationIndexNum(end)) {
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                     end = "0";
                     break;
                 }
@@ -860,7 +872,7 @@ void Menu::BlockStationInterval() {
                     }
                     if(confirm=="n")
                         break;
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                 }
                 break;
             }
@@ -893,7 +905,7 @@ void Menu::UnblockStation() {
             }
             if(confirm=="n")
                 break;
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
         }
         break;
     }
@@ -908,7 +920,7 @@ void Menu::UnblockStationInterval() {
             lineNumber = stoi(input);
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
         if(lineNumber==0)
@@ -932,7 +944,7 @@ void Menu::UnblockStationInterval() {
                     continue;
                 }
                 if(lines[lineNumber].getStationIndexNum(start)>lines[lineNumber].getStationIndexNum(end)) {
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                     end = "0";
                     break;
                 }
@@ -950,7 +962,7 @@ void Menu::UnblockStationInterval() {
                     }
                     if(confirm=="n")
                         break;
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                 }
                 break;
             }
@@ -991,7 +1003,7 @@ void Menu::TransferMenu() {
                 break;
             }
             else {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             break;
@@ -1026,7 +1038,7 @@ void Menu::ShowStationTransfers() {
             lineNumber = stoi(input);
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
         if(lineNumber==0)
@@ -1061,7 +1073,7 @@ void Menu::AddTransfer() {
             lineNumber = stoi(input);
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
         if(lineNumber==0)
@@ -1085,7 +1097,7 @@ void Menu::AddTransfer() {
                     lineNumber2 = stoi(input2);
                 }
                 catch(...) {
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                     continue;
                 }
                 if(lines.find(lineNumber2)==lines.end()) {
@@ -1107,7 +1119,7 @@ void Menu::AddTransfer() {
                             len = stoi(input3);
                         }
                         catch(...) {
-                            cout<<"输入错误，请重新输入："<<endl;
+                            PrintTextWithColor("输入错误，请重新输入：",4);
                             continue;
                         }
                         if(TS.addTransfer({lineNumber,station},{lineNumber2,station2},len)) {
@@ -1138,7 +1150,7 @@ void Menu::RemoveTransfer() {
             lineNumber = stoi(input);
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
         if(lineNumber==0)
@@ -1162,7 +1174,7 @@ void Menu::RemoveTransfer() {
                     lineNumber2 = stoi(input2);
                 }
                 catch(...) {
-                    cout<<"输入错误，请重新输入："<<endl;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
                     continue;
                 }
                 if(lines.find(lineNumber2)==lines.end()) {
@@ -1192,7 +1204,7 @@ void Menu::RemoveTransfer() {
                         }
                         if(confirm=="n")
                             break;
-                        cout<<"输入错误，请重新输入："<<endl;
+                        PrintTextWithColor("输入错误，请重新输入：",4);
                     }
                     break;
                 }
@@ -1226,7 +1238,7 @@ void Menu::FileMenu() {
                 break;
             }
             else {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             break;
@@ -1293,7 +1305,7 @@ void Menu::SettingMenu() {
                 break;
             }
             else {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             break;
@@ -1321,7 +1333,7 @@ void Menu::TestMenu() {
                 EnterTransferInformationInBatches();
             }
             else {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             break;
@@ -1346,7 +1358,7 @@ void Menu::EnterTransferInformationInBatches() {
             lineNumber1 = stoi(input);
         }
         catch(...) {
-            cout<<"输入错误，请重新输入："<<endl;
+            PrintTextWithColor("输入错误，请重新输入：",4);
             continue;
         }
         if(lines.find(lineNumber1)==lines.end()) {
@@ -1364,7 +1376,7 @@ void Menu::EnterTransferInformationInBatches() {
                 lineNumber2 = stoi(input);
             }
             catch(...) {
-                cout<<"输入错误，请重新输入："<<endl;
+                PrintTextWithColor("输入错误，请重新输入：",4);
                 continue;
             }
             if(lines.find(lineNumber2)==lines.end()) {
@@ -1384,7 +1396,7 @@ void Menu::EnterTransferInformationInBatches() {
                         break;
                     }
                     catch(...) {
-                        cout<<"输入错误，请重新输入："<<endl;
+                        PrintTextWithColor("输入错误，请重新输入：",4);
                         continue;
                     }
                 }

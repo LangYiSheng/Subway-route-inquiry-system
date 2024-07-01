@@ -11,6 +11,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <windows.h>
 
 class Menu {
     map<int,Line> lines;//线路信息,线路号到线路的映射，使用map是为了按序号排序
@@ -22,13 +23,15 @@ class Menu {
     //settings[2]值表示是否在显示路线时显示站点间距离
     //settings[3]值表示是否在显示路线时显示站点是否被禁用
     //settings[4]值表示是否在显示路线时显示换乘信息
+
+    //可选颜色：0-黑色 1-蓝色 2-绿色 3-湖蓝色 4-红色 5-紫色 6-黄色 7-白色 8-灰色 9-淡蓝色 10-淡绿色 11-淡湖蓝色 12-淡红色 13-淡紫色 14-淡黄色 15-亮白色
+    static void PrintTextWithColor(const string& text, int color , bool if_endl);//输出带颜色的文本
+
 public:
     Menu():settings(SETTING_NUM,true) {
         settings[0]=false;//默认不自动读取线路信息
         settings[1]=false;//默认不自动保存线路信息
     }//初始化设置信息;
-
-
 
     void MainMenu();//主菜单
         void InquiryLineMenu();//线路查询菜单
