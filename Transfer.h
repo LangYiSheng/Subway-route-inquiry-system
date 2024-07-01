@@ -29,6 +29,10 @@ public:
     bool hasTransfer(const pair<int,string>&station) const;//判断某站点是否有换乘信息
     bool hasTransfer(const pair<int,string>&station1,const pair<int,string>&station2) const;//判断两站点是否有换乘信息
     const map<pair<int,string>,list<pair<pair<int,string>,Length>>>& getTransfers() const;//获取所有换乘信息,用于保存到文件
+    void clear() {
+        transfers.clear();
+    }
+    //清空换乘信息
 };
 
 #endif //TRANSFER_H

@@ -23,7 +23,7 @@ void Menu::PrintTextWithColor(const string& text, int color,bool if_endl = true)
 void Menu::MainMenu() {
     if(FileIO::GETSET0()) {
         if(!FileIO::LoadMain(lines,blockedStations,settings,TS)) {
-            cout<<"自动读取存档失败"<<endl;
+            PrintTextWithColor("自动读取存档失败",4);
             system("pause");
         }
     }
@@ -32,6 +32,7 @@ void Menu::MainMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("欢迎使用上海地铁线路查询系统",2);
+        PrintTextWithColor("   当前版本：2024.7.1",1);
         cout<<"程序内存储线路数量为："<<lines.size()<<endl;
         cout<<"请通过输入数字来选择功能："<<endl;
         cout<<"1.线路查询\t- 获取地铁线路的信息"<<endl;
@@ -1535,9 +1536,10 @@ void Menu::SettingMenu() {
 void Menu::TestMenu() {
     while(true) {
         system("cls");
-        PrintTextWithColor("当前位于：主页面->开发者测试菜单",2);
+        PrintTextWithColor("当前位于：主页面->开发者菜单",2);
         cout<<"请通过输入数字来选择功能："<<endl;
         cout<<"1.批量输入换乘信息"<<endl;
+        cout<<"2.清除所有数据"<<endl;
         cout<<"0.返回上一级菜单"<<endl;
         cout<<"请输入您的选择：";
         string input;
@@ -1547,6 +1549,26 @@ void Menu::TestMenu() {
             }
             if(input=="1") {
                 EnterTransferInformationInBatches();
+            }
+            else if(input=="2") {
+                PrintTextWithColor("您将清除所有数据",4);
+                cout<<"是否确认清除？(y/n)";
+                string confirm;
+                while(cin>>confirm) {
+                    if(confirm=="y") {
+                        lines.clear();
+                        blockedStations.clear();
+                        settings = {false,false,true,true,true,true,true,true,true,true};
+                        TS.clear();
+                        cout<<"清除完成"<<endl;
+                        PrintTextWithColor("注意：您的存档文件不会被删除，你可以随时恢复到存档状态",4);
+                        system("pause");
+                        break;
+                    }
+                    if(confirm=="n")
+                        break;
+                    PrintTextWithColor("输入错误，请重新输入：",4);
+                }
             }
             else {
                 PrintTextWithColor("输入错误，请重新输入：",4);
