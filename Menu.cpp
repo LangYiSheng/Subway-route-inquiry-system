@@ -6,7 +6,7 @@
 
 void Menu::MainMenu() {
     if(FileIO::GETSET0()) {
-        if(!FileIO::LoadMain(lines,blockedStations,settings)) {
+        if(!FileIO::LoadMain(lines,blockedStations,settings,TS)) {
             cout<<"自动读取存档失败"<<endl;
             system("pause");
         }
@@ -49,7 +49,7 @@ void Menu::MainMenu() {
             else if(input=="0") {
                 cout<<"感谢使用"<<endl;
                 if(settings[1]) {
-                    if(!FileIO::SaveMain(lines,blockedStations,settings)) {
+                    if(!FileIO::SaveMain(lines,blockedStations,settings,TS)) {
                         cout<<"自动保存存档失败"<<endl;
                         system("pause");
                     }
@@ -175,6 +175,7 @@ void Menu::EditLineMenu() {
         cout<<"2.删除线路"<<endl;
         cout<<"3.编辑线路"<<endl;
         cout<<"4.禁用站点"<<endl;
+        cout<<"5.换乘信息菜单"<<endl;
         cout<<"0.返回上一级菜单"<<endl;
         cout<<"请输入您的选择：";
         string input;
@@ -190,6 +191,9 @@ void Menu::EditLineMenu() {
             }
             else if(input=="4") {
                 BlockStationMenu();
+            }
+            else if(input=="5") {
+                TransferMenu();
             }
             else if(input=="0") {
                 break;
@@ -944,6 +948,248 @@ void Menu::UnblockStationInterval() {
     }
 }
 
+void Menu::TransferMenu() {
+    while(true) {
+        system("cls");
+        cout<<"当前位于：主页面->线路编辑菜单->换乘信息菜单"<<endl;
+        cout<<"请通过输入数字来选择功能："<<endl;
+        cout<<"1.显示目前所有换乘信息"<<endl;
+        cout<<"2.显示某站点的换乘信息"<<endl;
+        cout<<"3.添加换乘信息"<<endl;
+        cout<<"4.删除换乘信息"<<endl;
+        cout<<"0.返回上一级菜单"<<endl;
+        cout<<"请输入您的选择：";
+        string input;
+        while(cin>>input) {
+            if(input=="1") {
+                ShowAllTransfers();
+            }
+            else if(input=="2") {
+                ShowStationTransfers();
+            }
+            else if(input=="3") {
+                AddTransfer();
+            }
+            else if(input=="4") {
+                RemoveTransfer();
+            }
+            else if(input=="0") {
+                break;
+            }
+            else {
+                cout<<"输入错误，请重新输入："<<endl;
+                continue;
+            }
+            break;
+        }
+        if(input=="0") {
+            break;
+        }
+        system("pause");
+    }
+}
+
+void Menu::ShowAllTransfers() {
+    if(TS.getTransfers().empty()) {
+        cout<<"暂无换乘信息"<<endl;
+        return;
+    }
+    const auto & transfers = TS.getTransfers();
+    for(const auto & transfer : transfers) {
+        cout<<transfer.first.first<<"号线的"<<transfer.first.second<<"站点可以换成至以下站点："<<endl;
+        for(const auto & station : transfer.second) {
+            cout<<"("<<station.first.first<<"号线) "<<station.first.second<<"站点 距离为"<<station.second<<endl;
+        }
+    }
+}
+
+void Menu::ShowStationTransfers() {
+    cout<<"请输入要查询站点所在的线路编号(输入0返回至上一级)：";
+    string input;
+    while(cin>>input) {
+        int lineNumber;
+        try {
+            lineNumber = stoi(input);
+        }
+        catch(...) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+        if(lineNumber==0)
+            break;
+        if(lines.find(lineNumber)==lines.end()) {
+            cout<<"未找到该线路，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"请输入要查询的站点名称：";
+        string station;
+        while(cin>>station) {
+            if(!lines[lineNumber].hasStation(station)) {
+                cout<<"未找到该站点，请重新输入："<<endl;
+                continue;
+            }
+            cout<<lineNumber<<"号线的"<<station<<"站点可以换成至以下站点："<<endl;
+            for(const auto & transfer : TS.getTransfers({lineNumber,station})) {
+                cout<<"("<<transfer.first.first<<"号线) "<<transfer.first.second<<"站点 距离为"<<transfer.second<<endl;
+            }
+            break;
+        }
+        break;
+    }
+}
+
+void Menu::AddTransfer() {
+    cout<<"请输入要添加换乘信息的站点所在的线路编号(输入0返回至上一级)：";
+    string input;
+    while(cin>>input) {
+        int lineNumber;
+        try {
+            lineNumber = stoi(input);
+        }
+        catch(...) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+        if(lineNumber==0)
+            break;
+        if(lines.find(lineNumber)==lines.end()) {
+            cout<<"未找到该线路，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"请输入要添加换乘信息的站点名称：";
+        string station;
+        while(cin>>station) {
+            if(!lines[lineNumber].hasStation(station)) {
+                cout<<"未找到该站点，请重新输入："<<endl;
+                continue;
+            }
+            cout<<"请输入要换乘至的线路编号：";
+            string input2;
+            while(cin>>input2) {
+                int lineNumber2;
+                try {
+                    lineNumber2 = stoi(input2);
+                }
+                catch(...) {
+                    cout<<"输入错误，请重新输入："<<endl;
+                    continue;
+                }
+                if(lines.find(lineNumber2)==lines.end()) {
+                    cout<<"未找到该线路，请重新输入："<<endl;
+                    continue;
+                }
+                cout<<"请输入要换乘至的站点名称：";
+                string station2;
+                while(cin>>station2) {
+                    if(!lines[lineNumber2].hasStation(station2)) {
+                        cout<<"未找到该站点，请重新输入："<<endl;
+                        continue;
+                    }
+                    cout<<"请输入两站点之间的距离：";
+                    string input3;
+                    while(cin>>input3) {
+                        Length len;
+                        try {
+                            len = stoi(input3);
+                        }
+                        catch(...) {
+                            cout<<"输入错误，请重新输入："<<endl;
+                            continue;
+                        }
+                        if(TS.addTransfer({lineNumber,station},{lineNumber2,station2},len)) {
+                            cout<<"添加成功"<<endl;
+                        }
+                        else {
+                            cout<<"添加失败"<<endl;
+                            cout<<"可能原因：换乘信息已存在/换乘线路相同"<<endl;
+                        }
+                        break;
+                    }
+                    break;
+                }
+                break;
+            }
+            break;
+        }
+        break;
+    }
+}
+
+void Menu::RemoveTransfer() {
+    cout<<"请输入要删除换乘信息的站点所在的线路编号(输入0返回至上一级)：";
+    string input;
+    while(cin>>input) {
+        int lineNumber;
+        try {
+            lineNumber = stoi(input);
+        }
+        catch(...) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+        if(lineNumber==0)
+            break;
+        if(lines.find(lineNumber)==lines.end()) {
+            cout<<"未找到该线路，请重新输入："<<endl;
+            continue;
+        }
+        cout<<"请输入要删除换乘信息的站点名称：";
+        string station;
+        while(cin>>station) {
+            if(!lines[lineNumber].hasStation(station)) {
+                cout<<"未找到该站点，请重新输入："<<endl;
+                continue;
+            }
+            cout<<"请输入要删除换乘信息的换乘线路编号：";
+            string input2;
+            while(cin>>input2) {
+                int lineNumber2;
+                try {
+                    lineNumber2 = stoi(input2);
+                }
+                catch(...) {
+                    cout<<"输入错误，请重新输入："<<endl;
+                    continue;
+                }
+                if(lines.find(lineNumber2)==lines.end()) {
+                    cout<<"未找到该线路，请重新输入："<<endl;
+                    continue;
+                }
+                cout<<"请输入要删除换乘信息的换乘站点名称：";
+                string station2;
+                while(cin>>station2) {
+                    if(!lines[lineNumber2].hasStation(station2)) {
+                        cout<<"未找到该站点，请重新输入："<<endl;
+                        continue;
+                    }
+                    cout<<"您将删除"<<lineNumber<<"号线的"<<station<<"站点到"<<lineNumber2<<"号线的"<<station2<<"站点的换乘信息"<<endl;
+                    cout<<"是否确认删除？(y/n)";
+                    string confirm;
+                    while(cin>>confirm) {
+                        if(confirm=="y") {
+                            if(TS.removeTransfer({lineNumber,station},{lineNumber2,station2})) {
+                                cout<<"删除成功"<<endl;
+                            }
+                            else {
+                                cout<<"删除失败"<<endl;
+                                cout<<"可能原因：换乘信息不存在"<<endl;
+                            }
+                            break;
+                        }
+                        if(confirm=="n")
+                            break;
+                        cout<<"输入错误，请重新输入："<<endl;
+                    }
+                    break;
+                }
+                break;
+            }
+            break;
+        }
+        break;
+    }
+}
+
 void Menu::FileMenu() {
     while(true) {
         system("cls");
@@ -978,7 +1224,7 @@ void Menu::FileMenu() {
 }
 
 void Menu::SaveLines() {
-    if(!FileIO::SaveMain(lines,blockedStations,settings)) {
+    if(!FileIO::SaveMain(lines,blockedStations,settings,TS)) {
         cout<<"保存失败"<<endl;
         cout<<"可能原因：创建/打开文件失败"<<endl;
     }
@@ -987,7 +1233,7 @@ void Menu::SaveLines() {
 }
 
 void Menu::ReadLines() {
-    if(!FileIO::LoadMain(lines,blockedStations,settings)) {
+    if(!FileIO::LoadMain(lines,blockedStations,settings,TS)) {
         cout<<"读取失败"<<endl;
         cout<<"可能原因：文件不存在或文件格式错误"<<endl;
     }
@@ -1045,12 +1291,16 @@ void Menu::TestMenu() {
         system("cls");
         cout<<"当前位于：主页面->开发者测试菜单"<<endl;
         cout<<"请通过输入数字来选择功能："<<endl;
+        cout<<"1.批量输入换乘信息"<<endl;
         cout<<"0.返回上一级菜单"<<endl;
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
             if(input=="0") {
                 break;
+            }
+            if(input=="1") {
+                EnterTransferInformationInBatches();
             }
             else {
                 cout<<"输入错误，请重新输入："<<endl;
@@ -1059,6 +1309,72 @@ void Menu::TestMenu() {
             break;
         }
         if(input=="0") {
+            break;
+        }
+    }
+}
+
+void Menu::EnterTransferInformationInBatches() {
+    cout<<"请输入换乘信息，输入格式为：线路编号1 站点名1 线路编号2 站点名2 距离1 线路编号3 站点名3 线路编号4 站点名4 距离2 ..."<<endl;
+    cout<<"站点名之间用空格隔开，站点名不能包含空格，距离为正整数"<<endl;
+    cout<<"当输入站点编号为0时停止输入"<<endl;
+    cout<<"请输入：";
+    string input;
+    while(cin>>input) {
+        if(input=="0")
+            break;
+        int lineNumber1;
+        try {
+            lineNumber1 = stoi(input);
+        }
+        catch(...) {
+            cout<<"输入错误，请重新输入："<<endl;
+            continue;
+        }
+        if(lines.find(lineNumber1)==lines.end()) {
+            cout<<"未找到该线路，请重新输入："<<endl;
+            continue;
+        }
+        string station1;
+        while(cin>>station1) {
+            if(!lines[lineNumber1].hasStation(station1)) {
+                cout<<"未找到该站点，请重新输入："<<endl;
+                continue;
+            }
+            int lineNumber2;
+            try {
+                lineNumber2 = stoi(input);
+            }
+            catch(...) {
+                cout<<"输入错误，请重新输入："<<endl;
+                continue;
+            }
+            if(lines.find(lineNumber2)==lines.end()) {
+                cout<<"未找到该线路，请重新输入："<<endl;
+                continue;
+            }
+            string station2;
+            while(cin>>station2) {
+                if(!lines[lineNumber2].hasStation(station2)) {
+                    cout<<"未找到该站点，请重新输入："<<endl;
+                    continue;
+                }
+                Length len=0;
+                while(cin>>input) {
+                    try {
+                        len = stoi(input);
+                        break;
+                    }
+                    catch(...) {
+                        cout<<"输入错误，请重新输入："<<endl;
+                        continue;
+                    }
+                }
+                if(!TS.addTransfer({lineNumber1,station1},{lineNumber2,station2},len)) {
+                    cout<<"添加失败"<<endl;
+                }
+                break;
+            }
             break;
         }
     }
