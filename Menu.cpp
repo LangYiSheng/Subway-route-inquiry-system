@@ -6,10 +6,16 @@
 
 
 void Menu::PrintTextWithColor(const string& text, int color,bool if_endl = true) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, color);//设置颜色
-    cout<<text;
-    SetConsoleTextAttribute(hConsole, 7);//恢复默认颜色
+    if(settings[5]) {
+        //如果开启彩色输出
+        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hConsole, color);//设置颜色
+        cout<<text;
+        SetConsoleTextAttribute(hConsole, 7);//恢复默认颜色
+    }
+    else {
+        cout<<text;
+    }
     if(if_endl)
         cout<<endl;
 }
@@ -200,7 +206,7 @@ void Menu::EditLineMenu() {
         cout<<"1.添加线路"<<endl;
         cout<<"2.删除线路"<<endl;
         cout<<"3.编辑线路"<<endl;
-        cout<<"4.禁用站点"<<endl;
+        cout<<"4.禁用站点菜单"<<endl;
         cout<<"5.换乘信息菜单"<<endl;
         cout<<"0.返回上一级菜单"<<endl;
         cout<<"请输入您的选择：";
@@ -789,7 +795,7 @@ void Menu::ShowBlockedStations() {
     else {
         cout<<"目前已被封闭的站点有："<<endl;
         for(const auto & station : blockedStations) {
-            cout<<station<<endl;
+            PrintTextWithColor(station,4);
         }
     };
 }
@@ -1024,7 +1030,8 @@ void Menu::ShowAllTransfers() {
     for(const auto & transfer : transfers) {
         cout<<transfer.first.first<<"号线的"<<transfer.first.second<<"站点可以换成至以下站点："<<endl;
         for(const auto & station : transfer.second) {
-            cout<<"("<<station.first.first<<"号线) "<<station.first.second<<"站点 距离为"<<station.second<<endl;
+            PrintTextWithColor("("+to_string(station.first.first)+"号线) "+station.first.second+"站点 距离为"+to_string(station.second),6);
+            cout<<station.first.second<<"站点 距离为"<<station.second<<endl;
         }
     }
 }
@@ -1056,7 +1063,8 @@ void Menu::ShowStationTransfers() {
             }
             cout<<lineNumber<<"号线的"<<station<<"站点可以换成至以下站点："<<endl;
             for(const auto & transfer : TS.getTransfers({lineNumber,station})) {
-                cout<<"("<<transfer.first.first<<"号线) "<<transfer.first.second<<"站点 距离为"<<transfer.second<<endl;
+                PrintTextWithColor("("+to_string(transfer.first.first)+"号线) "+transfer.first.second+"站点 距离为"+to_string(transfer.second),6);
+                cout<<transfer.first.second<<"站点 距离为"<<transfer.second<<endl;
             }
             break;
         }
@@ -1251,7 +1259,7 @@ void Menu::FileMenu() {
 
 void Menu::SaveLines() {
     if(!FileIO::SaveMain(lines,blockedStations,settings,TS)) {
-        cout<<"保存失败"<<endl;
+        PrintTextWithColor("保存失败",4);
         cout<<"可能原因：创建/打开文件失败"<<endl;
     }
     else cout<<"已完成保存"<<endl;
@@ -1260,7 +1268,7 @@ void Menu::SaveLines() {
 
 void Menu::ReadLines() {
     if(!FileIO::LoadMain(lines,blockedStations,settings,TS)) {
-        cout<<"读取失败"<<endl;
+        PrintTextWithColor("读取失败",4);
         cout<<"可能原因：文件不存在或文件格式错误"<<endl;
     }
     else cout<<"已完成读取"<<endl;
@@ -1277,11 +1285,12 @@ void Menu::SettingMenu() {
         system("cls");
         PrintTextWithColor("当前位于：主页面->设置菜单",2);
         cout<<"请通过输入数字来改变功能的是否启用："<<endl;
-        cout<<"1.程序启动时自动读取线路信息\t\t"<<(settings[0]?"(√)":"(×)")<<endl;
-        cout<<"2.程序退出时自动保存线路信息\t\t"<<(settings[1]?"(√)":"(×)")<<endl;
-        cout<<"3.在显示路线时显示站点间距离\t\t"<<(settings[2]?"(√)":"(×)")<<endl;
-        cout<<"4.在显示路线时显示站点是否被禁用\t"<<(settings[3]?"(√)":"(×)")<<endl;
-        cout<<"5.在显示路线时显示站点换乘信息\t\t"<<(settings[4]?"(√)":"(×)")<<endl;
+        cout<<"1.程序启动时自动读取线路信息\t\t";PrintTextWithColor((settings[0]?"(√)":"(×)"),settings[0]?2:4);
+        cout<<"2.程序退出时自动保存线路信息\t\t";PrintTextWithColor((settings[1]?"(√)":"(×)"),settings[1]?2:4);
+        cout<<"3.在显示路线时显示站点间距离\t\t";PrintTextWithColor((settings[2]?"(√)":"(×)"),settings[2]?2:4);
+        cout<<"4.在显示路线时显示站点是否被禁用\t";PrintTextWithColor((settings[3]?"(√)":"(×)"),settings[3]?2:4);
+        cout<<"5.在显示路线时显示站点换乘信息\t\t";PrintTextWithColor((settings[4]?"(√)":"(×)"),settings[4]?2:4);
+        cout<<"6.开启彩色输出\t\t\t\t";PrintTextWithColor((settings[5]?"(√)":"(×)"),settings[5]?2:4);
         cout<<"0.返回上一级菜单"<<endl;
         cout<<"请输入您的选择：";
         string input;
@@ -1300,6 +1309,9 @@ void Menu::SettingMenu() {
             }
             else if(input=="5") {
                 settings[4] = !settings[4];
+            }
+            else if(input=="6") {
+                settings[5] = !settings[5];
             }
             else if(input=="0") {
                 break;

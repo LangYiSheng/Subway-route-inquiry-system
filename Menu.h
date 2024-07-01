@@ -23,9 +23,10 @@ class Menu {
     //settings[2]值表示是否在显示路线时显示站点间距离
     //settings[3]值表示是否在显示路线时显示站点是否被禁用
     //settings[4]值表示是否在显示路线时显示换乘信息
+    //settings[5]值表示是否开启彩色输出
 
     //可选颜色：0-黑色 1-蓝色 2-绿色 3-湖蓝色 4-红色 5-紫色 6-黄色 7-白色 8-灰色 9-淡蓝色 10-淡绿色 11-淡湖蓝色 12-淡红色 13-淡紫色 14-淡黄色 15-亮白色
-    static void PrintTextWithColor(const string& text, int color , bool if_endl);//输出带颜色的文本
+    void PrintTextWithColor(const string& text, int color , bool if_endl);//输出带颜色的文本
 
 public:
     Menu():settings(SETTING_NUM,true) {
