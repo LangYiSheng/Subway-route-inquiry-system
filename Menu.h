@@ -5,9 +5,10 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include "GetRoute.h"
 #include "Line.h"
-#include "FileIO.h"
 #include "Transfer.h"
+#include "FileIO.h"
 #include <iostream>
 #include <map>
 #include <set>
@@ -29,10 +30,12 @@ class Menu {
     void PrintTextWithColor(const string& text, int color , bool if_endl);//输出带颜色的文本
 
 public:
+
     Menu():settings(SETTING_NUM,true) {
         settings[0]=false;//默认不自动读取线路信息
         settings[1]=false;//默认不自动保存线路信息
     }//初始化设置信息;
+
 
     void MainMenu();//主菜单
         void InquiryLineMenu();//线路查询菜单
@@ -59,6 +62,9 @@ public:
                 void ShowStationTransfers();//换乘信息菜单->显示某线路的换乘信息
                 void AddTransfer();//换乘信息菜单->添加换乘信息
                 void RemoveTransfer();//换乘信息菜单->删除换乘信息
+        void InquiryRouteMenu();//路线查询菜单
+            void InquiryShortestRoute();//路线查询菜单->查询最短路线
+            void InquiryLeastTransferRoute();//路线查询菜单->查询最少换乘路线
         void FileMenu();//文件操作菜单
             void SaveLines();//保存线路信息
             void ReadLines();//读取线路信息

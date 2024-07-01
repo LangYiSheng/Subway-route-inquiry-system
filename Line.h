@@ -82,6 +82,8 @@ public:
         }
         return -1;
     }//获取站点索引
+    unordered_map<string,StationIt> &getStationIndexMap() {return stationIndexMap;}//获取站点名到索引的映射
+    list<pair<string,Length>>& getStationNames(){return stationNames;}//获取站点名数组
 };
 
 
