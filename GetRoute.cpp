@@ -25,38 +25,7 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
         auto top = pq.top();
         pq.pop();//取出队首
         if(top.second==end) {
-            while(!pq_ans.empty()) {
-                prev[end]=pq_ans.top().second;
-                distance[end]=pq_ans.top().first;
-                pq_ans.pop();
-                Station now = end;
-                vector<pair<int,pair<string,string>>> route;
-                route.emplace_back(now.first,make_pair(now.second,now.second));
-                while(now!=start) {
-                    if(route.back().first!=prev[now].first) {
-                        route.back().second.first = now.second;
-                        route.emplace_back(prev[now].first,make_pair(prev[now].second,prev[now].second));
-                    }
-                    else {
-                        route.back().second.first = now.second;
-                    }
-                    now = prev[now];
-                }
-                route.back().second.first = start.second;
-                reverse(route.begin(),route.end());
-                //检查是否存在重复路径
-                bool flag = false;
-                for(const auto& r : result) {
-                    if(r.second==route) {
-                        flag = true;
-                        break;
-                    }
-                }
-                if(!flag) {
-                    result.emplace_back(distance[end],route);
-                }
-            }
-            break;
+            continue;
         }
         if(distance[top.second]<top.first) {
             continue;//已经有更短的路径
@@ -112,6 +81,37 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
             }
         }//遍历所有直达信息
     }
+    while(!pq_ans.empty()) {
+        prev[end]=pq_ans.top().second;
+        distance[end]=pq_ans.top().first;
+        pq_ans.pop();
+        Station now = end;
+        vector<pair<int,pair<string,string>>> route;
+        route.emplace_back(now.first,make_pair(now.second,now.second));
+        while(now!=start) {
+            if(route.back().first!=prev[now].first) {
+                route.back().second.first = now.second;
+                route.emplace_back(prev[now].first,make_pair(prev[now].second,prev[now].second));
+            }
+            else {
+                route.back().second.first = now.second;
+            }
+            now = prev[now];
+        }
+        route.back().second.first = start.second;
+        reverse(route.begin(),route.end());
+        //检查是否存在重复路径
+        bool flag = false;
+        for(const auto& r : result) {
+            if(r.second==route) {
+                flag = true;
+                break;
+            }
+        }
+        if(!flag) {
+            result.emplace_back(distance[end],route);
+        }
+    }
     return result;
 }
 
@@ -130,38 +130,7 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
         auto top = pq.top();
         pq.pop();//取出队首
         if(top.second==end) {
-            while(!pq_ans.empty()) {
-                prev[end]=pq_ans.top().second;
-                NumberOfTransfers[end]=pq_ans.top().first;
-                pq_ans.pop();
-                Station now = end;
-                vector<pair<int,pair<string,string>>> route;
-                route.emplace_back(now.first,make_pair(now.second,now.second));
-                while(now!=start) {
-                    if(route.back().first!=prev[now].first) {
-                        route.back().second.first = now.second;
-                        route.emplace_back(prev[now].first,make_pair(prev[now].second,prev[now].second));
-                    }
-                    else {
-                        route.back().second.first = now.second;
-                    }
-                    now = prev[now];
-                }
-                route.back().second.first = start.second;
-                reverse(route.begin(),route.end());
-                //检查是否存在重复路径
-                bool flag = false;
-                for(const auto& r : result) {
-                    if(r.second==route) {
-                        flag = true;
-                        break;
-                    }
-                }
-                if(!flag) {
-                    result.emplace_back(NumberOfTransfers[end],route);
-                }
-            }
-            break;
+            continue;
         }
         if(NumberOfTransfers[top.second]<top.first) {
             continue;//已经有更短的路径
@@ -216,6 +185,36 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
                 }
             }
         }//遍历所有直达信息
+    }
+    while(!pq_ans.empty()) {
+        prev[end] = pq_ans.top().second;
+        NumberOfTransfers[end] = pq_ans.top().first;
+        pq_ans.pop();
+        Station now = end;
+        vector<pair<int, pair<string, string>>> route;
+        route.emplace_back(now.first, make_pair(now.second, now.second));
+        while (now != start) {
+            if (route.back().first != prev[now].first) {
+                route.back().second.first = now.second;
+                route.emplace_back(prev[now].first, make_pair(prev[now].second, prev[now].second));
+            } else {
+                route.back().second.first = now.second;
+            }
+            now = prev[now];
+        }
+        route.back().second.first = start.second;
+        reverse(route.begin(), route.end());
+        //检查是否存在重复路径
+        bool flag = false;
+        for (const auto &r: result) {
+            if (r.second == route) {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) {
+            result.emplace_back(NumberOfTransfers[end], route);
+        }
     }
     return result;
 }
