@@ -15,39 +15,45 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
     map<Station, int> distance;//各个站点到起点的距离
     map<Station, Station> prev;//各个站点的前驱
     priority_queue<pair<int,Station>,vector<pair<int,Station>>,greater<>> pq;//优先队列
+    priority_queue<pair<int,Station>,vector<pair<int,Station>>,greater<>> pq_ans;//前驱队列
     pq.emplace(0,start);//起点入队
     distance[start] = 0;//起点到起点的距离为0
     while(!pq.empty()) {
         auto top = pq.top();
         pq.pop();//取出队首
         if(top.second==end) {
-            Station now = end;
-            vector<pair<int,pair<string,string>>> route;
-            route.emplace_back(now.first,make_pair(now.second,now.second));
-            while(now!=start) {
-                if(route.back().first!=prev[now].first) {
-                    route.back().second.first = now.second;
-                    route.emplace_back(prev[now].first,make_pair(prev[now].second,prev[now].second));
+            while(!pq_ans.empty()) {
+                prev[end]=pq_ans.top().second;
+                distance[end]=pq_ans.top().first;
+                pq_ans.pop();
+                Station now = end;
+                vector<pair<int,pair<string,string>>> route;
+                route.emplace_back(now.first,make_pair(now.second,now.second));
+                while(now!=start) {
+                    if(route.back().first!=prev[now].first) {
+                        route.back().second.first = now.second;
+                        route.emplace_back(prev[now].first,make_pair(prev[now].second,prev[now].second));
+                    }
+                    else {
+                        route.back().second.first = now.second;
+                    }
+                    now = prev[now];
                 }
-                else {
-                    route.back().second.first = now.second;
+                route.back().second.first = start.second;
+                reverse(route.begin(),route.end());
+                //检查是否存在重复路径
+                bool flag = false;
+                for(const auto& r : result) {
+                    if(r.second==route) {
+                        flag = true;
+                        break;
+                    }
                 }
-                now = prev[now];
-            }
-            route.back().second.first = start.second;
-            reverse(route.begin(),route.end());
-            //检查是否存在重复路径
-            bool flag = false;
-            for(const auto& r : result) {
-                if(r.second==route) {
-                    flag = true;
-                    break;
+                if(!flag) {
+                    result.emplace_back(distance[end],route);
                 }
             }
-            if(!flag) {
-                result.emplace_back(distance[end],route);
-            }
-            continue;
+            break;
         }
         if(distance[top.second]<top.first) {
             continue;//已经有更短的路径
@@ -56,6 +62,9 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
             for(const auto& transfer : TS.getTransfers(top.second)) {
                 if(blockStations.find(transfer.first.second)!=blockStations.end()) {
                     continue;//该站点是封闭站点
+                }
+                if(transfer.first==end) {
+                    pq_ans.emplace(distance[top.second]+transfer.second,top.second);
                 }
                 if(distance.find(transfer.first)==distance.end()||distance[transfer.first]>distance[top.second]+transfer.second) {
                     distance[transfer.first] = distance[top.second]+transfer.second;
@@ -71,6 +80,9 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
                 --frontStation;
                 if(blockStations.find(frontStation->first)==blockStations.end()) {
                     Station now = {top.second.first,frontStation->first};
+                    if(now==end) {
+                        pq_ans.emplace(distance[top.second]+frontStation->second,top.second);
+                    }
                     if(distance.find(now)==distance.end()||
                         distance[now]>distance[top.second]+frontStation->second) {
                         distance[now] = distance[top.second]+frontStation->second;
@@ -84,8 +96,11 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
                 ++backStation;
                 if(blockStations.find(backStation->first)==blockStations.end()) {
                     Station now = {top.second.first,backStation->first};
+                    if(now==end) {
+                        pq_ans.emplace(distance[top.second]+station->second,top.second);
+                    }
                     if(distance.find(now)==distance.end()||
-                        distance[now]>distance[top.second]+(--station)->second) {
+                        distance[now]>distance[top.second]+station->second) {
                         distance[now] = distance[top.second]+station->second;
                         prev[now] = top.second;
                         pq.emplace(distance[now],now);
@@ -102,39 +117,45 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
     map<Station, int> NumberOfTransfers;//各个站点到起点的换乘次数
     map<Station, Station> prev;//各个站点的前驱
     priority_queue<pair<int,Station>,vector<pair<int,Station>>,greater<>> pq;//优先队列
+    priority_queue<pair<int,Station>,vector<pair<int,Station>>,greater<>> pq_ans;//前驱队列
     pq.emplace(0,start);//起点入队
     NumberOfTransfers[start] = 0;//起点到起点的换乘次数为0
     while(!pq.empty()) {
         auto top = pq.top();
         pq.pop();//取出队首
         if(top.second==end) {
-            Station now = end;
-            vector<pair<int,pair<string,string>>> route;
-            route.emplace_back(now.first,make_pair(now.second,now.second));
-            while(now!=start) {
-                if(route.back().first!=prev[now].first) {
-                    route.back().second.first = now.second;
-                    route.emplace_back(prev[now].first,make_pair(prev[now].second,prev[now].second));
+            while(!pq_ans.empty()) {
+                prev[end]=pq_ans.top().second;
+                NumberOfTransfers[end]=pq_ans.top().first;
+                pq_ans.pop();
+                Station now = end;
+                vector<pair<int,pair<string,string>>> route;
+                route.emplace_back(now.first,make_pair(now.second,now.second));
+                while(now!=start) {
+                    if(route.back().first!=prev[now].first) {
+                        route.back().second.first = now.second;
+                        route.emplace_back(prev[now].first,make_pair(prev[now].second,prev[now].second));
+                    }
+                    else {
+                        route.back().second.first = now.second;
+                    }
+                    now = prev[now];
                 }
-                else {
-                    route.back().second.first = now.second;
+                route.back().second.first = start.second;
+                reverse(route.begin(),route.end());
+                //检查是否存在重复路径
+                bool flag = false;
+                for(const auto& r : result) {
+                    if(r.second==route) {
+                        flag = true;
+                        break;
+                    }
                 }
-                now = prev[now];
-            }
-            route.back().second.first = start.second;
-            reverse(route.begin(),route.end());
-            //检查是否存在重复路径
-            bool flag = false;
-            for(const auto& r : result) {
-                if(r.second==route) {
-                    flag = true;
-                    break;
+                if(!flag) {
+                    result.emplace_back(NumberOfTransfers[end],route);
                 }
             }
-            if(!flag) {
-                result.emplace_back(NumberOfTransfers[end],route);
-            }
-            continue;
+            break;
         }
         if(NumberOfTransfers[top.second]<top.first) {
             continue;//已经有更短的路径
@@ -144,7 +165,10 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
                 if(blockStations.find(transfer.first.second)!=blockStations.end()) {
                     continue;//该站点是封闭站点
                 }
-                if(NumberOfTransfers.find(transfer.first)==NumberOfTransfers.end()||NumberOfTransfers[transfer.first]>NumberOfTransfers[top.second]+transfer.second) {
+                if(transfer.first==end) {
+                    pq_ans.emplace(NumberOfTransfers[top.second]+1,top.second);
+                }
+                if(NumberOfTransfers.find(transfer.first)==NumberOfTransfers.end()||NumberOfTransfers[transfer.first]>NumberOfTransfers[top.second]+1) {
                     NumberOfTransfers[transfer.first] = NumberOfTransfers[top.second]+1;
                     prev[transfer.first] = top.second;
                     pq.emplace(NumberOfTransfers[transfer.first],transfer.first);
@@ -158,8 +182,11 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
                 --frontStation;
                 if(blockStations.find(frontStation->first)==blockStations.end()) {
                     Station now = {top.second.first,frontStation->first};
+                    if(now==end) {
+                        pq_ans.emplace(NumberOfTransfers[top.second],top.second);
+                    }
                     if(NumberOfTransfers.find(now)==NumberOfTransfers.end()||
-                        NumberOfTransfers[now]>NumberOfTransfers[top.second]+frontStation->second) {
+                        NumberOfTransfers[now]>NumberOfTransfers[top.second]) {
                         NumberOfTransfers[now] = NumberOfTransfers[top.second];
                         prev[now] = top.second;
                         pq.emplace(NumberOfTransfers[now],now);
@@ -171,8 +198,11 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
                 ++backStation;
                 if(blockStations.find(backStation->first)==blockStations.end()) {
                     Station now = {top.second.first,backStation->first};
+                    if(now==end) {
+                        pq_ans.emplace(NumberOfTransfers[top.second],top.second);
+                    }
                     if(NumberOfTransfers.find(now)==NumberOfTransfers.end()||
-                        NumberOfTransfers[now]>NumberOfTransfers[top.second]+(--station)->second) {
+                        NumberOfTransfers[now]>NumberOfTransfers[top.second]) {
                         NumberOfTransfers[now] = NumberOfTransfers[top.second];
                         prev[now] = top.second;
                         pq.emplace(NumberOfTransfers[now],now);
