@@ -1673,10 +1673,12 @@ void Menu::EnterTransferInformationInBatches() {
             cout<<"请至少输入一个线路号"<<endl;
             continue;
         }
-        for(int i = 0;i<targetLines.size()-2;i++) {
-            for(int j = i+1;j<targetLines.size()-1;j++) {
+        for(int i = 0;i<targetLines.size()-1;i++) {
+            for(int j = i+1;j<targetLines.size();j++) {
                 TS.addTransfer(pair<int,string>(targetLines[i],station),pair<int,string>(targetLines[j],station),1);
             }
         }//所有线路的两两组合
     }
+    cout<<"输入完成"<<endl;
+    system("pause");
 }

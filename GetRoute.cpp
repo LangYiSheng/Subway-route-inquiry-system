@@ -11,6 +11,9 @@
 typedef vector<pair<int, vector<pair<int, pair<string, string>>>>> RouteResult;//路线查询结果*/
 
 RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, string> end, map<int, Line>&lines, set<string>&blockStations, Transfer&TS) {
+    if(blockStations.find(start.second)!=blockStations.end()||blockStations.find(end.second)!=blockStations.end()) {
+        return {};
+    }
     RouteResult result;//结果
     map<Station, int> distance;//各个站点到起点的距离
     map<Station, Station> prev;//各个站点的前驱
@@ -113,6 +116,9 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
 }
 
 RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<int, string> end, map<int, Line>&lines, set<string>&blockStations, Transfer&TS) {
+    if(blockStations.find(start.second)!=blockStations.end()||blockStations.find(end.second)!=blockStations.end()) {
+        return {};
+    }
     RouteResult result;//结果
     map<Station, int> NumberOfTransfers;//各个站点到起点的换乘次数
     map<Station, Station> prev;//各个站点的前驱
@@ -166,7 +172,7 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
                     continue;//该站点是封闭站点
                 }
                 if(transfer.first==end) {
-                    pq_ans.emplace(NumberOfTransfers[top.second]+1,top.second);
+                    pq_ans.emplace(NumberOfTransfers[top.second],top.second);
                 }
                 if(NumberOfTransfers.find(transfer.first)==NumberOfTransfers.end()||NumberOfTransfers[transfer.first]>NumberOfTransfers[top.second]+1) {
                     NumberOfTransfers[transfer.first] = NumberOfTransfers[top.second]+1;
