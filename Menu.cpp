@@ -20,6 +20,28 @@ void Menu::PrintTextWithColor(const string& text, int color,bool if_endl = true)
         cout<<endl;
 }
 
+void Menu::PrintLineData(const int& lineNumber) {
+    PrintTextWithColor(to_string(lineNumber)+"号线",6);
+    for(const auto & station : lines[lineNumber].getStationsWithLength()) {
+        cout<<station.first;
+        if(settings[3]&&blockedStations.find(station.first)!=blockedStations.end())
+            PrintTextWithColor("(已封闭）",4,false);
+        if(settings[4]&&TS.hasTransfer({lineNumber,station.first})) {
+            PrintTextWithColor("( 可换乘至：" , 9 , false);
+            for(const auto & transfer : TS.getTransfers({lineNumber,station.first})) {
+                cout<<transfer.first.first<<"号线"<<transfer.first.second<<" ";
+            }
+            PrintTextWithColor(")" , 9 , false);
+        }
+        if(station!=lines[lineNumber].getStationsWithLength().back())
+            if(settings[2])
+                PrintTextWithColor("->"+to_string(station.second)+"->",3,false);
+            else
+                PrintTextWithColor("->",3,false);
+    }
+    cout<<endl;
+}
+
 void Menu::MainMenu() {
     if(FileIO::GETSET0()) {
         if(!FileIO::LoadMain("lines.txt",lines,blockedStations,settings,TS)) {
@@ -32,7 +54,7 @@ void Menu::MainMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("欢迎使用上海地铁线路查询系统",2);
-        PrintTextWithColor("   当前版本：2024.7.2",1);
+        PrintTextWithColor("   当前版本：2024.7.3",1);
         cout<<"程序内存储线路数量为："<<lines.size()<<endl;
         cout<<"请通过输入数字来选择功能："<<endl;
         cout<<"1.线路查询\t- 获取地铁线路的信息"<<endl;
@@ -140,25 +162,7 @@ void Menu::ShowAllLines() {
         cout<<"暂无线路信息"<<endl;
     else
         for(const auto & line : lines) {
-            PrintTextWithColor(to_string(line.first)+"号线",6);
-            for(const auto & station : line.second.getStationsWithLength()) {
-                cout<<station.first;
-                if(settings[3]&&blockedStations.find(station.first)!=blockedStations.end())
-                    PrintTextWithColor("(已封闭）",4,false);
-                if(settings[4]&&TS.hasTransfer({line.first,station.first})) {
-                    PrintTextWithColor("( 可换乘至：" , 9 , false);
-                    for(const auto & transfer : TS.getTransfers({line.first,station.first})) {
-                        cout<<transfer.first.first<<"号线"<<transfer.first.second<<" ";
-                    }
-                    PrintTextWithColor(")" , 9 , false);
-                }
-                if(station!=line.second.getStationsWithLength().back())
-                    if(settings[2])
-                        PrintTextWithColor("->"+to_string(station.second)+"->",3,false);
-                    else
-                        PrintTextWithColor("->",3,false);
-            }
-            cout<<endl;
+            PrintLineData(line.first);
         }
     system("pause");
 }
@@ -184,25 +188,7 @@ void Menu::InquiryLine() {
                 PrintTextWithColor("未找到该线路，请重新输入：",4);
                 continue;
             }
-            PrintTextWithColor(to_string(lineNumber)+"号线",6);
-            for(const auto & station : lines[lineNumber].getStationsWithLength()) {
-                cout<<station.first;
-                if(settings[3]&&blockedStations.find(station.first)!=blockedStations.end())
-                    PrintTextWithColor("(已封闭）",4,false);
-                if(settings[4]&&TS.hasTransfer({lineNumber,station.first})) {
-                    PrintTextWithColor("( 可换乘至：" , 9 , false);
-                    for(const auto & transfer : TS.getTransfers({lineNumber,station.first})) {
-                        cout<<transfer.first.first<<"号线"<<transfer.first.second<<" ";
-                    }
-                    PrintTextWithColor(")" , 9 , false);
-                }
-                if(station!=lines[lineNumber].getStationsWithLength().back())
-                    if(settings[2])
-                        PrintTextWithColor("->"+to_string(station.second)+"->",3,false);
-                    else
-                        PrintTextWithColor("->",3,false);
-            }
-            cout<<endl;
+            PrintLineData(lineNumber);
             break;
         }
         if(input=="0")
@@ -408,6 +394,7 @@ void Menu::EditLine() {
                 continue;
             }
             cout<<"您将编辑"<<lineNumber<<"号线的信息"<<endl;
+            PrintLineData(lineNumber);
             cout<<"请通过输入数字来选择功能："<<endl;
             cout<<"1.添加站点"<<endl;
             cout<<"2.删除站点"<<endl;
@@ -1289,6 +1276,7 @@ void Menu::InquiryShortestRoute() {
                 PrintTextWithColor("未找到该线路，请重新输入：",4);
                 continue;
             }
+            PrintLineData(lineNumber);
             cout<<"请输入起始站点名称：";
             string start;
             while(cin>>start) {
@@ -1311,6 +1299,7 @@ void Menu::InquiryShortestRoute() {
                         PrintTextWithColor("未找到该线路，请重新输入：",4);
                         continue;
                     }
+                    PrintLineData(lineNumber2);
                     cout<<"请输入终点站点名称：";
                     string end;
                     while(cin>>end) {
@@ -1347,7 +1336,7 @@ void Menu::InquiryShortestRoute() {
                                     cout<<"从 "<<line.second.first<<" 站上车 -> "<<line.second.second<<" 站下车"<<endl;
                                 }
                                 i++;
-                                if(i==4) {
+                                if(i==4&&result.size()>3) {
                                     PrintTextWithColor("最多显示3条路线",4);
                                     break;
                                 }
@@ -1389,6 +1378,7 @@ void Menu::InquiryLeastTransferRoute() {
                 PrintTextWithColor("未找到该线路，请重新输入：",4);
                 continue;
             }
+            PrintLineData(lineNumber);
             cout<<"请输入起始站点名称：";
             string start;
             while(cin>>start) {
@@ -1411,6 +1401,7 @@ void Menu::InquiryLeastTransferRoute() {
                         PrintTextWithColor("未找到该线路，请重新输入：",4);
                         continue;
                     }
+                    PrintLineData(lineNumber2);
                     cout<<"请输入终点站点名称：";
                     string end;
                     while(cin>>end) {
@@ -1447,7 +1438,7 @@ void Menu::InquiryLeastTransferRoute() {
                                     cout<<"从 "<<line.second.first<<" 站上车 -> "<<line.second.second<<" 站下车"<<endl;
                                 }
                                 i++;
-                                if(i==4) {
+                                if(i==4&&result.size()>3) {
                                     PrintTextWithColor("最多显示3条路线",4);
                                     break;
                                 }
