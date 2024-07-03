@@ -449,7 +449,7 @@ void Menu::AddStation(int line_number) {
         if(pos=="0")
             break;
         if(pos!="-1"&&!lines[line_number].hasStation(pos)) {
-            cout<<"未找到该站点，请重新输入："<<endl;
+            PrintTextWithColor("未找到该站点，请重新输入：",4);
             continue;
         }
         cout<<"请输入要添加的站点名称：";
@@ -525,7 +525,7 @@ void Menu::RemoveStation(int line_number) {
         if(station=="0")
             break;
         if(!lines[line_number].hasStation(station)) {
-            cout<<"未找到该站点，请重新输入："<<endl;
+            PrintTextWithColor("未找到该站点，请重新输入：",4);
             continue;
         }
         cout<<"您将删除"<<station<<"站点的信息"<<endl;
@@ -554,7 +554,7 @@ void Menu::EditStationDistance(int line_number) {
         if(station=="0")
             break;
         if(!lines[line_number].hasStation(station)) {
-            cout<<"未找到该站点，请重新输入："<<endl;
+            PrintTextWithColor("未找到该站点，请重新输入：",4);
             continue;
         }
         if(lines[line_number].isLastStation(lines[line_number].getStationIndex(station))) {
@@ -586,7 +586,7 @@ void Menu::EditStationName(int line_number) {
         if(station=="0")
             break;
         if(!lines[line_number].hasStation(station)) {
-            cout<<"未找到该站点，请重新输入："<<endl;
+            PrintTextWithColor("未找到该站点，请重新输入：",4);
             continue;
         }
         cout<<"请输入新的站点名称：";
@@ -848,14 +848,14 @@ void Menu::BlockStationInterval() {
         string start;
         while(cin>>start) {
             if(!lines[lineNumber].hasStation(start)) {
-                cout<<"未找到该站点，请重新输入："<<endl;
+                PrintTextWithColor("未找到该站点，请重新输入：",4);
                 continue;
             }
             cout<<"请输入要封闭的站点区间的终点站点名称：";
             string end;
             while(cin>>end) {
                 if(!lines[lineNumber].hasStation(end)) {
-                    cout<<"未找到该站点，请重新输入："<<endl;
+                    PrintTextWithColor("未找到该站点，请重新输入：",4);
                     continue;
                 }
                 if(lines[lineNumber].getStationIndexNum(start)>lines[lineNumber].getStationIndexNum(end)) {
@@ -938,14 +938,14 @@ void Menu::UnblockStationInterval() {
         string start;
         while(cin>>start) {
             if(!lines[lineNumber].hasStation(start)) {
-                cout<<"未找到该站点，请重新输入："<<endl;
+                PrintTextWithColor("未找到该站点，请重新输入：",4);
                 continue;
             }
             cout<<"请输入要恢复的站点区间的终点站点名称：";
             string end;
             while(cin>>end) {
                 if(!lines[lineNumber].hasStation(end)) {
-                    cout<<"未找到该站点，请重新输入："<<endl;
+                    PrintTextWithColor("未找到该站点，请重新输入：",4);
                     continue;
                 }
                 if(lines[lineNumber].getStationIndexNum(start)>lines[lineNumber].getStationIndexNum(end)) {
@@ -1057,7 +1057,7 @@ void Menu::ShowStationTransfers() {
         string station;
         while(cin>>station) {
             if(!lines[lineNumber].hasStation(station)) {
-                cout<<"未找到该站点，请重新输入："<<endl;
+                PrintTextWithColor("未找到该站点，请重新输入：",4);
                 continue;
             }
             cout<<lineNumber<<"号线的"<<station<<"站点可以换成至以下站点："<<endl;
@@ -1089,11 +1089,12 @@ void Menu::AddTransfer() {
             PrintTextWithColor("未找到该线路，请重新输入：",4);
             continue;
         }
+        PrintLineData(lineNumber);
         cout<<"请输入要添加换乘信息的站点名称：";
         string station;
         while(cin>>station) {
             if(!lines[lineNumber].hasStation(station)) {
-                cout<<"未找到该站点，请重新输入："<<endl;
+                PrintTextWithColor("未找到该站点，请重新输入：",4);
                 continue;
             }
             cout<<"请输入要换乘至的线路编号：";
@@ -1111,11 +1112,12 @@ void Menu::AddTransfer() {
                     PrintTextWithColor("未找到该线路，请重新输入：",4);
                     continue;
                 }
+                PrintLineData(lineNumber2);
                 cout<<"请输入要换乘至的站点名称：";
                 string station2;
                 while(cin>>station2) {
                     if(!lines[lineNumber2].hasStation(station2)) {
-                        cout<<"未找到该站点，请重新输入："<<endl;
+                        PrintTextWithColor("未找到该站点，请重新输入：",4);
                         continue;
                     }
                     cout<<"请输入两站点之间的距离：";
@@ -1166,11 +1168,12 @@ void Menu::RemoveTransfer() {
             PrintTextWithColor("未找到该线路，请重新输入：",4);
             continue;
         }
+        PrintLineData(lineNumber);
         cout<<"请输入要删除换乘信息的站点名称：";
         string station;
         while(cin>>station) {
             if(!lines[lineNumber].hasStation(station)) {
-                cout<<"未找到该站点，请重新输入："<<endl;
+                PrintTextWithColor("未找到该站点，请重新输入：",4);
                 continue;
             }
             cout<<"请输入要删除换乘信息的换乘线路编号：";
@@ -1188,11 +1191,12 @@ void Menu::RemoveTransfer() {
                     PrintTextWithColor("未找到该线路，请重新输入：",4);
                     continue;
                 }
+                PrintLineData(lineNumber2);
                 cout<<"请输入要删除换乘信息的换乘站点名称：";
                 string station2;
                 while(cin>>station2) {
                     if(!lines[lineNumber2].hasStation(station2)) {
-                        cout<<"未找到该站点，请重新输入："<<endl;
+                        PrintTextWithColor("未找到该站点，请重新输入：",4);
                         continue;
                     }
                     PrintTextWithColor("您将删除"+to_string(lineNumber)+"号线的"+station+"站点到"+to_string(lineNumber2)+"号线的"+station2+"站点的换乘信息",4);
