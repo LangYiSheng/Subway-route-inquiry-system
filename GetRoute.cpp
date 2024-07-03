@@ -13,7 +13,7 @@ typedef vector<pair<int, vector<pair<int, pair<string, string>>>>> RouteResult;/
 RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, string> end, map<int, Line>&lines, set<string>&blockStations, Transfer&TS) {
     if(blockStations.find(start.second)!=blockStations.end()||blockStations.find(end.second)!=blockStations.end()) {
         return {};
-    }
+    }//起点或终点是封闭站点
     RouteResult result;//结果
     map<Station, int> distance;//各个站点到起点的距离
     map<Station, Station> prev;//各个站点的前驱

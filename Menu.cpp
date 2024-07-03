@@ -29,7 +29,10 @@ void Menu::PrintLineData(const int& lineNumber) {
         if(settings[4]&&TS.hasTransfer({lineNumber,station.first})) {
             PrintTextWithColor("( 可换乘至：" , 9 , false);
             for(const auto & transfer : TS.getTransfers({lineNumber,station.first})) {
-                cout<<transfer.first.first<<"号线"<<transfer.first.second<<" ";
+                cout<<transfer.first.first<<"号线 ";
+                if(transfer.first.second!=station.first) {
+                    cout<<transfer.first.second<<"站 ";
+                }
             }
             PrintTextWithColor(")" , 9 , false);
         }
@@ -53,10 +56,10 @@ void Menu::MainMenu() {
     SetConsoleTitle("上海地铁线路查询系统");
     while(true) {
         system("cls");
-        PrintTextWithColor("欢迎使用上海地铁线路查询系统",2);
-        PrintTextWithColor("   当前版本：2024.7.3",1);
-        cout<<"程序内存储线路数量为："<<lines.size()<<endl;
-        cout<<"请通过输入数字来选择功能："<<endl;
+        PrintTextWithColor("    欢迎使用上海地铁线路查询系统",2);
+        PrintTextWithColor("       当前版本：2024.7.4",1);
+        cout<<"      当前线路数量为：";PrintTextWithColor(to_string(lines.size()),6,false);cout<<" 条"<<endl;
+        PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.线路查询\t- 获取地铁线路的信息"<<endl;
         cout<<"2.线路编辑\t- 编辑地铁线路的信息"<<endl;
         cout<<"3.路线查询\t- 查询站点间的乘坐线路  "<<endl;
@@ -101,7 +104,7 @@ void Menu::MainMenu() {
                             }
                             cout<<"已自动保存存档"<<endl;
                         }
-                        Sleep(2000);
+                        Sleep(1000);
                         return;
                     }
                     if(confirm=="n") {
@@ -127,10 +130,10 @@ void Menu::InquiryLineMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("当前位于：主页面->线路查询菜单",2);
-        cout<<"请通过输入数字来选择功能："<<endl;
+        PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.显示目前所有线路"<<endl;
         cout<<"2.查询某条线路"<<endl;
-        cout<<"0.返回上一级菜单"<<endl;
+        PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
@@ -200,13 +203,13 @@ void Menu::EditLineMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("当前位于：主页面->线路编辑菜单",2);
-        cout<<"请通过输入数字来选择功能："<<endl;
+        PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.添加线路"<<endl;
         cout<<"2.删除线路"<<endl;
         cout<<"3.编辑线路"<<endl;
         cout<<"4.禁用站点菜单"<<endl;
         cout<<"5.换乘信息菜单"<<endl;
-        cout<<"0.返回上一级菜单"<<endl;
+        PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
@@ -395,14 +398,14 @@ void Menu::EditLine() {
             }
             cout<<"您将编辑"<<lineNumber<<"号线的信息"<<endl;
             PrintLineData(lineNumber);
-            cout<<"请通过输入数字来选择功能："<<endl;
+            PrintTextWithColor("请输入数字选择功能：",6);
             cout<<"1.添加站点"<<endl;
             cout<<"2.删除站点"<<endl;
             cout<<"3.修改站点距离"<<endl;
             cout<<"4.修改站点名称"<<endl;
             cout<<"5.扩充线路长度"<<endl;
             cout<<"6.缩短线路长度"<<endl;
-            cout<<"0.返回上一级菜单"<<endl;
+            PrintTextWithColor("0.返回上一级菜单",2);
             cout<<"请输入您的选择：";
             string input2;
             while(cin>>input2) {
@@ -746,13 +749,13 @@ void Menu::BlockStationMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("当前位于：主页面->线路编辑菜单->禁用站点",2);
-        cout<<"请通过输入数字来选择功能："<<endl;
+        PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.显示目前所有被封闭的站点"<<endl;
         cout<<"2.禁用指定站点"<<endl;
         cout<<"3.禁用指定区间的所有站点"<<endl;
         cout<<"4.解禁站点"<<endl;
         cout<<"5.解禁区间的所有站点"<<endl;
-        cout<<"0.返回上一级菜单"<<endl;
+        PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
@@ -844,6 +847,7 @@ void Menu::BlockStationInterval() {
             PrintTextWithColor("未找到该线路，请重新输入：",4);
             continue;
         }
+        PrintLineData(lineNumber);
         cout<<"请输入要封闭的站点区间的起始站点名称：";
         string start;
         while(cin>>start) {
@@ -934,6 +938,7 @@ void Menu::UnblockStationInterval() {
             PrintTextWithColor("未找到该线路，请重新输入：",4);
             continue;
         }
+        PrintLineData(lineNumber);
         cout<<"请输入要恢复的站点区间的起始站点名称：";
         string start;
         while(cin>>start) {
@@ -983,12 +988,12 @@ void Menu::TransferMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("当前位于：主页面->线路编辑菜单->换乘信息菜单",2);
-        cout<<"请通过输入数字来选择功能："<<endl;
+        PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.显示目前所有换乘信息"<<endl;
         cout<<"2.显示某站点的换乘信息"<<endl;
         cout<<"3.添加换乘信息"<<endl;
         cout<<"4.删除换乘信息"<<endl;
-        cout<<"0.返回上一级菜单"<<endl;
+        PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
@@ -1231,10 +1236,10 @@ void Menu::InquiryRouteMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("当前位于：主页面->路线查询菜单",2);
-        cout<<"请通过输入数字来选择功能："<<endl;
+        PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.查询两站点之间的";PrintTextWithColor("时间最短",6,false);cout<<"路线"<<endl;
         cout<<"2.查询两站点之间的";PrintTextWithColor("换乘最少",6,false);cout<<"路线"<<endl;
-        cout<<"0.返回上一级菜单"<<endl;
+        PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
@@ -1311,8 +1316,11 @@ void Menu::InquiryShortestRoute() {
                             PrintTextWithColor("未找到该站点，请重新输入：",4);
                             continue;
                         }
-                        if(lineNumber==lineNumber2&&start==end) {
-                            PrintTextWithColor("起点与终点相同，不用走路，您已经在终点了。",4);
+                        if(start==end) {
+                            if(lineNumber==lineNumber2)
+                                PrintTextWithColor("起点与终点相同，不用走路，您已经在终点了。",4);
+                            else
+                                PrintTextWithColor("起点与终点站点相同，你只需要换个出口，就抵达终点了。",4);
                             system("pause");
                             break;
                         }
@@ -1413,7 +1421,7 @@ void Menu::InquiryLeastTransferRoute() {
                             PrintTextWithColor("未找到该站点，请重新输入：",4);
                             continue;
                         }
-                        if(lineNumber==lineNumber2&&start==end) {
+                        if(start==end) {
                             PrintTextWithColor("起点与终点相同，不用走路，您已经在终点了。",4);
                             system("pause");
                             break;
@@ -1467,12 +1475,13 @@ void Menu::FileMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("当前位于：主页面->文件操作菜单",2);
-        cout<<"请通过输入数字来选择功能："<<endl;
-        cout<<"数据位于程序目录下的line.txt中"<<endl;
-        cout<<"1.保存当前数据"<<endl;
-        cout<<"2.读取存档数据"<<endl;
-        cout<<"3.从指定文件读取数据"<<endl;
-        cout<<"0.返回上一级菜单"<<endl;
+        PrintTextWithColor("请输入数字选择功能：",6);
+        cout<<"1.";PrintTextWithColor("保存",3,false);cout<<"当前数据至程序目录"<<endl;
+        cout<<"2.从程序目录";PrintTextWithColor("读取",3,false);cout<<"存档数据"<<endl;
+        cout<<"3.从指定文件";PrintTextWithColor("读取",3,false);cout<<"存档数据"<<endl;
+        PrintTextWithColor("0.返回上一级菜单",2);
+        cout<<"当前线路数量为：";PrintTextWithColor(to_string(lines.size()),6,false);cout<<" 条"<<endl;
+        PrintTextWithColor("数据位于程序目录下的line.txt中",3);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
@@ -1541,14 +1550,14 @@ void Menu::SettingMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("当前位于：主页面->设置菜单",2);
-        cout<<"请通过输入数字来改变功能的是否启用："<<endl;
+        PrintTextWithColor("请通过输入数字来改变功能的是否启用：",6);
         cout<<"1.程序启动时自动读取线路信息\t\t";PrintTextWithColor((settings[0]?"(√)":"(×)"),settings[0]?2:4);
         cout<<"2.程序退出时自动保存线路信息\t\t";PrintTextWithColor((settings[1]?"(√)":"(×)"),settings[1]?2:4);
         cout<<"3.在显示路线时显示站点间距离\t\t";PrintTextWithColor((settings[2]?"(√)":"(×)"),settings[2]?2:4);
         cout<<"4.在显示路线时显示站点是否被禁用\t";PrintTextWithColor((settings[3]?"(√)":"(×)"),settings[3]?2:4);
         cout<<"5.在显示路线时显示站点换乘信息\t\t";PrintTextWithColor((settings[4]?"(√)":"(×)"),settings[4]?2:4);
         cout<<"6.开启彩色输出\t\t\t\t";PrintTextWithColor((settings[5]?"(√)":"(×)"),settings[5]?2:4);
-        cout<<"0.返回上一级菜单"<<endl;
+        PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
@@ -1589,10 +1598,10 @@ void Menu::TestMenu() {
     while(true) {
         system("cls");
         PrintTextWithColor("当前位于：主页面->开发者菜单",2);
-        cout<<"请通过输入数字来选择功能："<<endl;
+        PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.批量输入换乘信息"<<endl;
         cout<<"2.清除所有数据"<<endl;
-        cout<<"0.返回上一级菜单"<<endl;
+        PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
         string input;
         while(cin>>input) {
