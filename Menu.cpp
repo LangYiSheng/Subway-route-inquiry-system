@@ -207,7 +207,7 @@ void Menu::EditLineMenu() {
         cout<<"1.添加线路"<<endl;
         cout<<"2.删除线路"<<endl;
         cout<<"3.编辑线路"<<endl;
-        cout<<"4.禁用站点菜单"<<endl;
+        cout<<"4.封闭站点菜单"<<endl;
         cout<<"5.换乘信息菜单"<<endl;
         PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
@@ -749,7 +749,7 @@ void Menu::ShortenLine(int line_number) {
 void Menu::BlockStationMenu() {
     while(true) {
         system("cls");
-        PrintTextWithColor("当前位于：主页面->线路编辑菜单->禁用站点",2);
+        PrintTextWithColor("当前位于：主页面->线路编辑菜单->封闭站点",2);
         PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.显示目前所有被封闭的站点"<<endl;
         cout<<"2.封闭指定站点"<<endl;
