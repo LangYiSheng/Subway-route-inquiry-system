@@ -50,7 +50,6 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
             if(!lines.at(top.second.first).isFirstStation(station)) {
                 auto frontStation = station;
                 --frontStation;
-                if(blockStations.find(frontStation->first)==blockStations.end()) {
                     Station now = {top.second.first,frontStation->first};
                     if(now==end) {
                         pq_ans.emplace(distance[top.second]+frontStation->second,top.second);
@@ -61,12 +60,10 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
                         prev[now] = top.second;
                         pq.emplace(distance[now],now);
                         }
-                }
             }
             if(!lines.at(top.second.first).isLastStation(station)) {
                 auto backStation = station;
                 ++backStation;
-                if(blockStations.find(backStation->first)==blockStations.end()) {
                     Station now = {top.second.first,backStation->first};
                     if(now==end) {
                         pq_ans.emplace(distance[top.second]+station->second,top.second);
@@ -77,7 +74,6 @@ RouteResult GetRoute::InquiryShortestRoute(pair<int, string> start, pair<int, st
                         prev[now] = top.second;
                         pq.emplace(distance[now],now);
                     }
-                }
             }
         }//遍历所有直达信息
     }
@@ -155,7 +151,6 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
             if(!lines.at(top.second.first).isFirstStation(station)) {
                 auto frontStation = station;
                 --frontStation;
-                if(blockStations.find(frontStation->first)==blockStations.end()) {
                     Station now = {top.second.first,frontStation->first};
                     if(now==end) {
                         pq_ans.emplace(NumberOfTransfers[top.second],top.second);
@@ -166,12 +161,10 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
                         prev[now] = top.second;
                         pq.emplace(NumberOfTransfers[now],now);
                         }
-                }
             }
             if(!lines.at(top.second.first).isLastStation(station)) {
                 auto backStation = station;
                 ++backStation;
-                if(blockStations.find(backStation->first)==blockStations.end()) {
                     Station now = {top.second.first,backStation->first};
                     if(now==end) {
                         pq_ans.emplace(NumberOfTransfers[top.second],top.second);
@@ -182,7 +175,6 @@ RouteResult GetRoute::InquiryLeastTransferRoute(pair<int, string> start, pair<in
                         prev[now] = top.second;
                         pq.emplace(NumberOfTransfers[now],now);
                     }
-                }
             }
         }//遍历所有直达信息
     }

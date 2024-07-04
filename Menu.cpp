@@ -752,10 +752,10 @@ void Menu::BlockStationMenu() {
         PrintTextWithColor("当前位于：主页面->线路编辑菜单->禁用站点",2);
         PrintTextWithColor("请输入数字选择功能：",6);
         cout<<"1.显示目前所有被封闭的站点"<<endl;
-        cout<<"2.禁用指定站点"<<endl;
-        cout<<"3.禁用指定区间的所有站点"<<endl;
-        cout<<"4.解禁站点"<<endl;
-        cout<<"5.解禁区间的所有站点"<<endl;
+        cout<<"2.封闭指定站点"<<endl;
+        cout<<"3.封闭指定区间的所有站点"<<endl;
+        cout<<"4.解封站点"<<endl;
+        cout<<"5.解封区间的所有站点"<<endl;
         PrintTextWithColor("0.返回上一级菜单",2);
         cout<<"请输入您的选择：";
         string input;
