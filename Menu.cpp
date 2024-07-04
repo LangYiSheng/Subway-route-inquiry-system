@@ -356,6 +356,7 @@ void Menu::RemoveLine() {
                 continue;
             }
             cout<<"您将删除"<<lineNumber<<"号线的信息"<<endl;
+            PrintLineData(lineNumber);
             cout<<"是否确认删除该线路？(y/n)";
             string confirm;
             while(cin>>confirm) {
